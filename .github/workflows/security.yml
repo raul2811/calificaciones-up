@@ -58,4 +58,4 @@ jobs:
 
       # Edit deny.toml to change license or policy decisions.
       - name: Enforce dependency policy
-        run: cargo deny check --config ../deny.toml advisories bans licenses
+        run: cargo deny check --config ../../deny.toml advisories bans licenses
