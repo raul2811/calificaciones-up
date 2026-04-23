@@ -26,6 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: apps/api
 
     steps:
       - name: Checkout repository
@@ -51,7 +54,7 @@ jobs:
         run: cargo install --locked cargo-deny
 
       - name: Audit advisories
-        run: cargo audit --file apps/api/Cargo.lock
+        run: cargo audit --file Cargo.lock
 
       # Edit deny.toml to change license or policy decisions.
       - name: Enforce dependency policy
