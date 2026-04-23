@@ -1,0 +1,38 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# next.js
+.next/
+**/.next/
+out/
+
+# production
+build/
+target/
+
+'test-results/
+
+# misc
+.DS_Store
+*.pem
+cookies.txt
+login.html
+avanceAcademico.html
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local env files
+.env
+**/.env
+*.env
+.env*.local
+**/.env*.local
+
+# ide
+.idea/
+.vscode/

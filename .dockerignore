@@ -1,0 +1,17 @@
+node_modules/
+apps/*/node_modules/
+apps/*/.next/
+apps/api/
+.idea/
+.vscode/
+.git/
+docs/
+*.log
+*.pem
+.env
+.env.*
+!.env.example
+!.env.compose.example
+cookies.txt
+login.html
+avanceAcademico.html
