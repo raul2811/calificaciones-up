@@ -4,6 +4,8 @@ Plataforma web para consultar y organizar informacion academica relacionada con 
 
 El proyecto esta construido como monorepo y separa la interfaz web del backend que consulta, consolida y expone los datos necesarios para autenticacion, avance academico, foto del estudiante y resumen del expediente.
 
+Calificaciones-UP es una propuesta de mejora visual y funcional de la plataforma oficial de consulta academica de la Universidad de Panama. En esencia, actua como una capa de presentacion renovada sobre el sistema institucional existente, con el objetivo de ofrecer una experiencia mas clara, moderna y amigable para el usuario, sin reemplazar la plataforma oficial ni alterar su funcionamiento interno.
+
 ## Que resuelve
 
 - Centraliza el estado academico y financiero en un dashboard unico.
@@ -11,6 +13,12 @@ El proyecto esta construido como monorepo y separa la interfaz web del backend q
 - Presenta analitica de calificaciones y progreso por periodos.
 - Da visibilidad a recuperaciones, profesores y morosidad.
 - Expone un backend propio para desacoplar el frontend de la fuente remota.
+
+## Seguridad y alcance
+
+Calificaciones-UP no almacena credenciales de acceso. El ingreso del usuario se gestiona de forma temporal y segura, unicamente para consultar la informacion academica disponible en la plataforma oficial.
+
+El sistema emplea scraping seguro y controlado, limitado exclusivamente a la lectura de datos autorizados por el propio usuario. No retiene contrasenas, no replica bases de datos institucionales y no busca comprometer la confidencialidad de la informacion.
 
 ## Arquitectura
 
@@ -241,3 +249,9 @@ El repositorio ya incluye:
 GitHub:
 
 - `https://github.com/raul2811/calificaciones-up`
+
+## Licencia
+
+Este proyecto se distribuye bajo `GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later)`.
+
+Copyright (C) 2026 Raul Serrano
