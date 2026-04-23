@@ -1,6 +1,17 @@
 {
   "name": "calificaciones-up",
   "private": true,
+  "scripts": {
+    "build:web": "npm run build --workspace=apps/web",
+    "start:web": "npm run start --workspace=apps/web",
+    "lint:web": "npm run lint --workspace=apps/web",
+    "test:web": "npm run test --workspace=apps/web",
+    "check:api": "cargo check --manifest-path apps/api/Cargo.toml",
+    "docker:build:web": "docker build -f apps/web/Dockerfile -t calificaciones-up-web .",
+    "docker:build:api": "docker build -t calificaciones-up-api apps/api",
+    "docker:up": "docker compose up --build",
+    "docker:down": "docker compose down"
+  },
   "workspaces": [
     "apps/*"
   ]

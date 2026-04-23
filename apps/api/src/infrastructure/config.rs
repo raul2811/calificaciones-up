@@ -15,9 +15,12 @@ impl Config {
             .ok()
             .and_then(|raw| raw.parse::<SocketAddr>().ok())
             .unwrap_or_else(|| {
-                "0.0.0.0:8081"
-                    .parse::<SocketAddr>()
-                    .expect("default API_ADDR must be valid")
+                let port = std::env::var("PORT")
+                    .ok()
+                    .and_then(|raw| raw.parse::<u16>().ok())
+                    .unwrap_or(8081);
+
+                SocketAddr::from(([0, 0, 0, 0], port))
             });
 
         let frontend_origin =

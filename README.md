@@ -5,32 +5,34 @@
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ed?style=for-the-badge&logo=docker)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-orange?style=for-the-badge)
 
-**Calificaciones UP** es una plataforma web moderna diseñada para transformar la experiencia de consulta académica de los estudiantes de la **Universidad de Panamá**. Actúa como una capa de presentación optimizada sobre la Secretaría Virtual oficial, ofreciendo una interfaz clara, rápida y navegable.
+**Calificaciones UP** es una plataforma web moderna diseñada para transformar la experiencia de consulta academica de los estudiantes de la **Universidad de Panama**. Actua como una capa de presentacion optimizada sobre la Secretaria Virtual oficial, ofreciendo una interfaz clara, rapida y navegable.
+
+Calificaciones-UP es una propuesta de mejora visual y funcional de la plataforma oficial de consulta academica de la Universidad de Panama. En esencia, actua como una capa de presentacion renovada sobre el sistema institucional existente, con el objetivo de ofrecer una experiencia mas clara, moderna y amigable para el usuario, sin reemplazar la plataforma oficial ni alterar su funcionamiento interno.
 
 [**Explorar Repositorio »**](https://github.com/raul2811/calificaciones-up)
 
 ---
 
-## ✨ Características Principales
+## ✨ Caracteristicas Principales
 
-| Función | Descripción |
+| Funcion | Descripcion |
 | :--- | :--- |
-| **🚀 Dashboard Único** | Centraliza tu estado académico y financiero en una sola vista. |
-| **📊 Analíticas** | Visualiza tu progreso por periodos y estadísticas de calificaciones. |
+| **🚀 Dashboard Unico** | Centraliza tu estado academico y financiero en una sola vista. |
+| **📊 Analiticas** | Visualiza tu progreso por periodos y estadisticas de calificaciones. |
 | **🔍 Seguimiento** | Filtra materias aprobadas, pendientes, observadas o reprobadas. |
-| **👤 Perfil Completo** | Acceso rápido a tu foto de estudiante y resumen de expediente. |
+| **👤 Perfil Completo** | Acceso rapido a tu foto de estudiante y resumen de expediente. |
 | **💰 Finanzas** | Visibilidad clara sobre morosidad y estatus de pagos. |
 
 ---
 
-## 🛠️ Stack Técnico
+## 🛠️ Stack Tecnico
 
-El proyecto está construido bajo una arquitectura de **monorepo**, separando responsabilidades para garantizar velocidad y escalabilidad.
+El proyecto esta construido bajo una arquitectura de **monorepo**, separando responsabilidades para garantizar velocidad y escalabilidad.
 
 - **Frontend:** `Next.js 15` + `React 19` + `Tailwind CSS v4`
-- **Backend:** `Rust` + `Axum` (Alta eficiencia y seguridad de memoria)
-- **Infraestructura:** `Docker` & `Docker Compose`
-- **Lenguaje:** `TypeScript` para el cliente.
+- **Backend:** `Rust` + `Axum`
+- **Infraestructura:** `Docker` + `Docker Compose`
+- **Lenguaje cliente:** `TypeScript`
 
 ---
 
@@ -38,12 +40,17 @@ El proyecto está construido bajo una arquitectura de **monorepo**, separando re
 
 ```text
 calificaciones-up/
-├── 📱 apps/
-│   ├── web/          # Next.js App Router (Interfaz de usuario)
-│   └── api/          # Rust Backend (Scraping y Consolidación)
-├── 📄 docs/          # Documentación adicional
-├── 🐳 Dockerfile     # Configuración de despliegue
-└── ⚙️ compose.yaml   # Orquestación de servicios
+├── apps/
+│   ├── web/                # Next.js App Router
+│   │   ├── Dockerfile
+│   │   └── railway.toml
+│   └── api/                # Rust + Axum
+│       ├── Dockerfile
+│       └── railway.toml
+├── docs/
+│   └── deployment/
+│       └── railway.md
+└── compose.yaml
 ```
 
 ---
@@ -51,55 +58,83 @@ calificaciones-up/
 ## 🛡️ Seguridad y Alcance
 
 > [!IMPORTANT]
-> **Privacidad Primero:** Calificaciones-UP **no almacena tus credenciales**. El acceso es temporal y se utiliza exclusivamente para realizar un scraping seguro y controlado de los datos autorizados por el usuario en la plataforma oficial.
+> **Privacidad Primero:** Calificaciones-UP **no almacena credenciales de acceso**. El ingreso del usuario se gestiona de forma temporal y segura, unicamente para consultar la informacion academica disponible en la plataforma oficial.
+
+El sistema emplea scraping seguro y controlado, limitado exclusivamente a la lectura de datos autorizados por el propio usuario. No retiene contrasenas, no replica bases de datos institucionales y no busca comprometer la confidencialidad de la informacion.
 
 ---
 
-## 🚀 Guía de Inicio Rápido
+## 🚀 Guia de Inicio Rapido
 
 ### Requisitos Previos
 - **Node.js** 20+
-- **Rust** & Cargo
-- **Docker** (Opcional para despliegue local)
+- **npm**
+- **Rust** y `cargo`
+- **Docker** opcional para despliegue local
 
-### Configuración Local
+### Estructura de despliegue
+
+El repositorio esta organizado por servicio para facilitar despliegues en plataformas como Railway:
+
+- `apps/web/Dockerfile`
+- `apps/web/railway.toml`
+- `apps/api/Dockerfile`
+- `apps/api/railway.toml`
+- `compose.yaml`
+- `docs/deployment/railway.md`
+
+### Configuracion Local
 
 1. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-2. **Variables de Entorno:**
-   Configura los archivos `.env` basándote en los ejemplos:
-   * **Web:** `apps/web/.env.local`
-   * **API:** `apps/api/.env`
+2. **Configurar variables de entorno:**
+```bash
+cp apps/web/.env.example apps/web/.env.local
+cp apps/api/.env.example apps/api/.env
+```
 
-3. **Ejecución en Desarrollo:**
+3. **Ejecucion en desarrollo:**
+En terminales separadas:
+```bash
+cd apps/web && npm run dev
+cd apps/api && cargo run
+```
 
-   En terminales separadas:
-   ```bash
-   # Terminal 1: Frontend
-   cd apps/web && npm run dev  # http://localhost:3000
+URLs locales:
 
-   # Terminal 2: Backend
-   cd apps/api && cargo run    # http://localhost:8081
-   ```
+- frontend: `http://localhost:3000`
+- backend: `http://localhost:8081`
+
+### Comandos utiles
+
+```bash
+npm run build:web
+npm run check:api
+npm run docker:build:web
+npm run docker:build:api
+npm run docker:up
+```
 
 ---
 
 ## 🐳 Despliegue con Docker
 
-La forma más rápida de poner el sistema en marcha es usando Docker Compose:
+La forma mas simple de poner el sistema en marcha es usando Docker Compose:
 
 ```bash
-# 1. Copiar configuración de entorno
 cp .env.compose.example .env
-
-# 2. Levantar servicios
 docker compose up --build
 ```
 
-### Verificación de Salud (Health Checks)
+Servicios expuestos por defecto:
+
+- `http://localhost:3000`
+- `http://localhost:8081`
+
+### Verificacion de Salud
 ```bash
 curl http://localhost:8081/health
 curl http://localhost:8081/ready
@@ -107,28 +142,117 @@ curl http://localhost:8081/ready
 
 ---
 
-## ⚙️ Configuración (Variables de Entorno)
+## ⚙️ Configuracion (Variables de Entorno)
 
-### Backend (Rust)
-| Variable | Descripción |
-| :--- | :--- |
-| `API_ADDR` | Dirección de escucha del servidor (ej. `0.0.0.0:8081`) |
-| `FRONTEND_ORIGIN` | URL del frontend para permitir CORS |
-| `MATRICULA_BASE_URL` | URL base del sistema institucional |
+### Frontend
 
-### Frontend (Next.js)
-| Variable | Descripción |
-| :--- | :--- |
-| `NEXT_PUBLIC_API_BASE_URL` | **Requerida.** URL pública del backend |
-| `NEXT_PUBLIC_APP_NAME` | Nombre de la aplicación |
+Variables relevantes:
 
----
+- `NEXT_PUBLIC_API_BASE_URL` requerida
+- `NEXT_PUBLIC_APP_NAME` opcional
+- `NEXT_PUBLIC_SITE_URL` opcional
 
-## 📄 Licencia
+Importante:
+`NEXT_PUBLIC_API_BASE_URL` es publica y queda embebida en el build del frontend. En produccion debe apuntar a una URL accesible desde el navegador del usuario, no a un hostname interno como `http://api:8081`.
 
-Este proyecto es software libre y se distribuye bajo la licencia **GNU Affero General Public License v3.0**.
+### Backend
 
-Copyright © 2026 [Raul Serrano](https://github.com/raul2811)
+Variables relevantes:
 
----
-Para más detalles, visita el [repositorio oficial](https://github.com/raul2811/calificaciones-up).
+- `PORT`
+- `API_ADDR`
+- `FRONTEND_ORIGIN`
+- `RUST_LOG`
+- `MATRICULA_BASE_URL`
+- `MATRICULA_USER_AGENT`
+
+Importante:
+el backend soporta `PORT` para plataformas que asignan puertos dinamicos, como Railway. Si `API_ADDR` no esta definido, la app usa `PORT` y hace bind en `0.0.0.0`.
+
+### Build manual por imagen
+
+Frontend:
+```bash
+docker build \
+  -f apps/web/Dockerfile \
+  --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 \
+  --build-arg NEXT_PUBLIC_SITE_URL=http://localhost:3000 \
+  -t calificaciones-up-web .
+
+docker run --rm -p 3000:3000 calificaciones-up-web
+```
+
+Backend:
+
+```bash
+docker build -t calificaciones-up-api ./apps/api
+
+docker run --rm -p 8081:8081 \
+  -e PORT=8081 \
+  -e FRONTEND_ORIGIN=http://localhost:3000 \
+  calificaciones-up-api
+```
+
+## Despliegue en Railway
+
+El monorepo ya incluye config por servicio para Railway:
+
+- `apps/web/railway.toml`
+- `apps/api/railway.toml`
+
+Resumen recomendado:
+
+1. Crea un servicio `web` apuntando a este repo.
+2. En `web`, usa `Root Directory: /` y `Config as Code Path: /apps/web/railway.toml`.
+3. Crea un servicio `api` apuntando a este repo.
+4. En `api`, usa `Root Directory: /apps/api` y `Config as Code Path: /apps/api/railway.toml`.
+5. Configura `NEXT_PUBLIC_API_BASE_URL` en `web` con la URL publica de `api`.
+6. Configura `FRONTEND_ORIGIN` en `api` con la URL publica de `web`.
+
+Guia paso a paso:
+
+- `docs/deployment/railway.md`
+
+### Variables minimas en Railway
+
+`web`:
+
+- `NEXT_PUBLIC_API_BASE_URL`
+- `NEXT_PUBLIC_SITE_URL`
+- `NEXT_PUBLIC_APP_NAME` opcional
+
+`api`:
+
+- `FRONTEND_ORIGIN`
+- `MATRICULA_BASE_URL` opcional
+- `MATRICULA_USER_AGENT` opcional
+- `RUST_LOG` opcional
+
+## Despliegue en servidor
+
+Recomendaciones practicas:
+
+1. Publica `web` detras de HTTPS con un dominio propio o reverse proxy.
+2. Publica `api` detras del mismo dominio o en un subdominio dedicado.
+3. Construye el frontend con `NEXT_PUBLIC_API_BASE_URL` apuntando a la URL publica real del backend.
+4. Configura `FRONTEND_ORIGIN` en el backend con la URL publica real del frontend para CORS.
+5. Usa `GET /health` y `GET /ready` para probes de plataforma.
+
+Ejemplo:
+
+- frontend: `https://calificaciones.tu-dominio.com`
+- backend: `https://api.calificaciones.tu-dominio.com`
+
+Entonces:
+
+- `NEXT_PUBLIC_API_BASE_URL=https://api.calificaciones.tu-dominio.com`
+- `NEXT_PUBLIC_SITE_URL=https://calificaciones.tu-dominio.com`
+- `FRONTEND_ORIGIN=https://calificaciones.tu-dominio.com`
+
+## Licencia
+
+Este proyecto se distribuye bajo `GNU Affero General Public License v3.0 o posterior (AGPL-3.0-or-later)`.
+
+Copyright (C) 2026 Raul Serrano
+
+Para mas detalles, visita el [repositorio oficial](https://github.com/raul2811/calificaciones-up).
