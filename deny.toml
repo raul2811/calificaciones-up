@@ -12,7 +12,10 @@ allow = [
   "MPL-2.0",
   "Zlib",
   "CC0-1.0",
+  "AGPL-3.0",
+  "AGPL-3.0-or-later",
 ]
+confidence-threshold = 0.8
 exceptions = []
 
 [advisories]
