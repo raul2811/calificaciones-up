@@ -245,8 +245,8 @@ mod tests {
     #[test]
     fn provincia_accepts_all_allowed_values() {
         let allowed = [
-            "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14",
-            "15",
+            "00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13",
+            "14", "15",
         ];
 
         for value in allowed {
@@ -334,7 +334,8 @@ mod tests {
 
     #[test]
     fn remote_credentials_validates_all_fields() {
-        let credentials = RemoteLoginCredentials::try_new("06", "00", "0723", "00584", "secret").unwrap();
+        let credentials =
+            RemoteLoginCredentials::try_new("06", "00", "0723", "00584", "secret").unwrap();
 
         assert_eq!(credentials.provincia.as_str(), "06");
         assert_eq!(credentials.clase.as_str(), "00");
@@ -345,7 +346,8 @@ mod tests {
 
     #[test]
     fn remote_credentials_fails_fast_on_invalid_input() {
-        let err = RemoteLoginCredentials::try_new("99", "00", "0723", "00584", "secret").unwrap_err();
+        let err =
+            RemoteLoginCredentials::try_new("99", "00", "0723", "00584", "secret").unwrap_err();
         assert_eq!(err, CredentialValidationError::InvalidProvincia);
     }
 }

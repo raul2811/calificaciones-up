@@ -45,7 +45,8 @@ impl GetStudentPhotoUseCase {
         &self,
         command: GetStudentPhotoCommand,
     ) -> Result<RemotePhotoPayload, GetStudentPhotoError> {
-        let session_id = SessionId::try_new(command.session_id).map_err(|_| GetStudentPhotoError::Unauthorized)?;
+        let session_id = SessionId::try_new(command.session_id)
+            .map_err(|_| GetStudentPhotoError::Unauthorized)?;
 
         let Some(session) = self
             .session_repository
@@ -99,7 +100,9 @@ mod tests {
     use super::*;
     use crate::{
         application::{
-            remote_login_client::{RemoteFetchError, RemoteLoginClientError, RemoteLoginCookies, RemoteLoginOutcome},
+            remote_login_client::{
+                RemoteFetchError, RemoteLoginClientError, RemoteLoginCookies, RemoteLoginOutcome,
+            },
             session_repository::SessionRepository,
         },
         domain::{
@@ -140,7 +143,10 @@ mod tests {
             Ok(())
         }
 
-        async fn remove_expired(&self, _now: OffsetDateTime) -> Result<usize, SessionRepositoryError> {
+        async fn remove_expired(
+            &self,
+            _now: OffsetDateTime,
+        ) -> Result<usize, SessionRepositoryError> {
             Ok(0)
         }
     }

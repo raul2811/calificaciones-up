@@ -1,0 +1,58 @@
+name: Security
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "apps/api/**"
+      - "deny.toml"
+      - "rust-toolchain.toml"
+      - ".github/workflows/security.yml"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "apps/api/**"
+      - "deny.toml"
+      - "rust-toolchain.toml"
+      - ".github/workflows/security.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+        with:
+          cache: false
+          rustflags: ""
+
+      - name: Cache Cargo artifacts
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            apps/api -> target
+          shared-key: api-security
+
+      - name: Install cargo-audit
+        run: cargo install --locked cargo-audit
+
+      - name: Install cargo-deny
+        run: cargo install --locked cargo-deny
+
+      - name: Audit advisories
+        run: cargo audit --file apps/api/Cargo.lock
+
+      # Edit deny.toml to change license or policy decisions.
+      - name: Enforce dependency policy
+        run: cargo deny check --manifest-path apps/api/Cargo.toml advisories bans licenses

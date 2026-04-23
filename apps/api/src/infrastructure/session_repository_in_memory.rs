@@ -35,12 +35,7 @@ impl SessionRepository for InMemorySessionRepository {
         &self,
         session_id: &SessionId,
     ) -> Result<Option<InternalSession>, SessionRepositoryError> {
-        let maybe_session = self
-            .sessions
-            .read()
-            .await
-            .get(session_id.as_str())
-            .cloned();
+        let maybe_session = self.sessions.read().await.get(session_id.as_str()).cloned();
 
         Ok(maybe_session)
     }
@@ -139,7 +134,11 @@ mod tests {
         let removed = repo.remove_expired(now).await.unwrap();
         assert_eq!(removed, 1);
 
-        assert!(repo.find_by_session_id(&expired_id).await.unwrap().is_none());
+        assert!(repo
+            .find_by_session_id(&expired_id)
+            .await
+            .unwrap()
+            .is_none());
         assert!(repo.find_by_session_id(&active_id).await.unwrap().is_some());
     }
 }

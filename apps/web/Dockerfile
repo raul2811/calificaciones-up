@@ -1,4 +1,4 @@
-FROM node:20-bookworm-slim AS deps
+FROM docker.io/library/node:20-bookworm-slim AS deps
 
 WORKDIR /app
 
@@ -9,7 +9,7 @@ COPY apps/web/package.json ./apps/web/package.json
 
 RUN npm ci
 
-FROM node:20-bookworm-slim AS builder
+FROM docker.io/library/node:20-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -31,7 +31,7 @@ COPY apps/web ./apps/web
 
 RUN npm run build --workspace=apps/web
 
-FROM node:20-bookworm-slim AS runner
+FROM docker.io/library/node:20-bookworm-slim AS runner
 
 WORKDIR /app
 

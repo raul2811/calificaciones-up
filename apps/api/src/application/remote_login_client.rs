@@ -32,10 +32,8 @@ pub trait RemoteLoginClient: Send + Sync {
         session: &InternalSession,
     ) -> Result<String, RemoteFetchError>;
 
-    async fn fetch_notas_html(
-        &self,
-        session: &InternalSession,
-    ) -> Result<String, RemoteFetchError>;
+    async fn fetch_notas_html(&self, session: &InternalSession)
+        -> Result<String, RemoteFetchError>;
 
     async fn fetch_profesores_html(
         &self,

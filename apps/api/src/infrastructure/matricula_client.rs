@@ -8,14 +8,11 @@ use reqwest::{
     StatusCode, Url,
 };
 
-use crate::domain::{
-    credentials::RemoteLoginCredentials,
-    session::InternalSession,
-};
 use crate::application::remote_login_client::{
-    RemoteFetchError, RemoteLoginClient, RemoteLoginClientError, RemoteLoginCookies, RemoteLoginOutcome,
-    RemotePhotoFetchError, RemotePhotoPayload,
+    RemoteFetchError, RemoteLoginClient, RemoteLoginClientError, RemoteLoginCookies,
+    RemoteLoginOutcome, RemotePhotoFetchError, RemotePhotoPayload,
 };
+use crate::domain::{credentials::RemoteLoginCredentials, session::InternalSession};
 use async_trait::async_trait;
 
 const LOGIN_PATH: &str = "/sevup/acceso/index.html";
@@ -58,9 +55,7 @@ pub enum MatriculaClientError {
     RequestFailed(reqwest::Error),
     MissingRemoteCookies,
     RemoteSessionExpired,
-    UnexpectedResponse {
-        status_code: u16,
-    },
+    UnexpectedResponse { status_code: u16 },
 }
 
 impl Display for MatriculaClientError {
@@ -68,7 +63,9 @@ impl Display for MatriculaClientError {
         match self {
             Self::InvalidBaseUrl => f.write_str("Invalid MATRICULA_BASE_URL."),
             Self::RequestFailed(_) => f.write_str("Remote request to Matricula UP failed."),
-            Self::MissingRemoteCookies => f.write_str("Missing remote cookies in internal session."),
+            Self::MissingRemoteCookies => {
+                f.write_str("Missing remote cookies in internal session.")
+            }
             Self::RemoteSessionExpired => f.write_str("Remote session expired."),
             Self::UnexpectedResponse { status_code } => {
                 write!(f, "Unexpected response from Matricula UP: {}", status_code)
@@ -102,7 +99,10 @@ impl MatriculaUpClient {
         })
     }
 
-    pub async fn login(&self, credentials: &RemoteLoginCredentials) -> Result<RemoteLoginResult, MatriculaClientError> {
+    pub async fn login(
+        &self,
+        credentials: &RemoteLoginCredentials,
+    ) -> Result<RemoteLoginResult, MatriculaClientError> {
         let login_url = self
             .base_url
             .join(LOGIN_PATH)
@@ -152,35 +152,40 @@ impl MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(AVANCE_PATH, AVANCE_REFERER, session).await
+        self.fetch_authenticated_html(AVANCE_PATH, AVANCE_REFERER, session)
+            .await
     }
 
     pub async fn fetch_notas_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(NOTAS_PATH, NOTAS_REFERER, session).await
+        self.fetch_authenticated_html(NOTAS_PATH, NOTAS_REFERER, session)
+            .await
     }
 
     pub async fn fetch_profesores_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(PROFESORES_PATH, PROFESORES_REFERER, session).await
+        self.fetch_authenticated_html(PROFESORES_PATH, PROFESORES_REFERER, session)
+            .await
     }
 
     pub async fn fetch_morosidad_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(MOROSIDAD_PATH, MOROSIDAD_REFERER, session).await
+        self.fetch_authenticated_html(MOROSIDAD_PATH, MOROSIDAD_REFERER, session)
+            .await
     }
 
     pub async fn fetch_student_photo(
         &self,
         session: &InternalSession,
     ) -> Result<RemotePhotoPayload, MatriculaClientError> {
-        let cookie_header = build_remote_cookie_header(session).ok_or(MatriculaClientError::MissingRemoteCookies)?;
+        let cookie_header = build_remote_cookie_header(session)
+            .ok_or(MatriculaClientError::MissingRemoteCookies)?;
 
         let url = self
             .base_url
@@ -205,7 +210,9 @@ impl MatriculaUpClient {
                 .and_then(|value| value.to_str().ok())
                 .unwrap_or_default();
 
-            if location.contains(REMOTE_LOGIN_LOCATION_HINT) || location.contains("acceso/index.html") {
+            if location.contains(REMOTE_LOGIN_LOCATION_HINT)
+                || location.contains("acceso/index.html")
+            {
                 return Err(MatriculaClientError::RemoteSessionExpired);
             }
         }
@@ -236,7 +243,10 @@ impl MatriculaUpClient {
             .map_err(MatriculaClientError::RequestFailed)?
             .to_vec();
 
-        Ok(RemotePhotoPayload { content_type, bytes })
+        Ok(RemotePhotoPayload {
+            content_type,
+            bytes,
+        })
     }
 
     async fn fetch_authenticated_html(
@@ -245,7 +255,8 @@ impl MatriculaUpClient {
         referer: &str,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        let cookie_header = build_remote_cookie_header(session).ok_or(MatriculaClientError::MissingRemoteCookies)?;
+        let cookie_header = build_remote_cookie_header(session)
+            .ok_or(MatriculaClientError::MissingRemoteCookies)?;
 
         let url = self
             .base_url
@@ -270,7 +281,9 @@ impl MatriculaUpClient {
                 .and_then(|value| value.to_str().ok())
                 .unwrap_or_default();
 
-            if location.contains(REMOTE_LOGIN_LOCATION_HINT) || location.contains("acceso/index.html") {
+            if location.contains(REMOTE_LOGIN_LOCATION_HINT)
+                || location.contains("acceso/index.html")
+            {
                 return Err(MatriculaClientError::RemoteSessionExpired);
             }
         }
@@ -319,51 +332,63 @@ impl RemoteLoginClient for MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, RemoteFetchError> {
-        self.fetch_avance_academico_html(session).await.map_err(|error| match error {
-            MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
-            _ => RemoteFetchError::Upstream,
-        })
+        self.fetch_avance_academico_html(session)
+            .await
+            .map_err(|error| match error {
+                MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
+                _ => RemoteFetchError::Upstream,
+            })
     }
 
     async fn fetch_notas_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, RemoteFetchError> {
-        MatriculaUpClient::fetch_notas_html(self, session).await.map_err(|error| match error {
-            MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
-            _ => RemoteFetchError::Upstream,
-        })
+        MatriculaUpClient::fetch_notas_html(self, session)
+            .await
+            .map_err(|error| match error {
+                MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
+                _ => RemoteFetchError::Upstream,
+            })
     }
 
     async fn fetch_profesores_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, RemoteFetchError> {
-        MatriculaUpClient::fetch_profesores_html(self, session).await.map_err(|error| match error {
-            MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
-            _ => RemoteFetchError::Upstream,
-        })
+        MatriculaUpClient::fetch_profesores_html(self, session)
+            .await
+            .map_err(|error| match error {
+                MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
+                _ => RemoteFetchError::Upstream,
+            })
     }
 
     async fn fetch_morosidad_html(
         &self,
         session: &InternalSession,
     ) -> Result<String, RemoteFetchError> {
-        MatriculaUpClient::fetch_morosidad_html(self, session).await.map_err(|error| match error {
-            MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
-            _ => RemoteFetchError::Upstream,
-        })
+        MatriculaUpClient::fetch_morosidad_html(self, session)
+            .await
+            .map_err(|error| match error {
+                MatriculaClientError::RemoteSessionExpired => RemoteFetchError::SessionExpired,
+                _ => RemoteFetchError::Upstream,
+            })
     }
 
     async fn fetch_student_photo(
         &self,
         session: &InternalSession,
     ) -> Result<RemotePhotoPayload, RemotePhotoFetchError> {
-        MatriculaUpClient::fetch_student_photo(self, session).await.map_err(|error| match error {
-            MatriculaClientError::RemoteSessionExpired => RemotePhotoFetchError::SessionExpired,
-            MatriculaClientError::UnexpectedResponse { status_code } if status_code == 404 => RemotePhotoFetchError::NotFound,
-            _ => RemotePhotoFetchError::Upstream,
-        })
+        MatriculaUpClient::fetch_student_photo(self, session)
+            .await
+            .map_err(|error| match error {
+                MatriculaClientError::RemoteSessionExpired => RemotePhotoFetchError::SessionExpired,
+                MatriculaClientError::UnexpectedResponse { status_code: 404 } => {
+                    RemotePhotoFetchError::NotFound
+                }
+                _ => RemotePhotoFetchError::Upstream,
+            })
     }
 }
 
@@ -381,7 +406,11 @@ fn extract_remote_cookies(headers: &HeaderMap) -> RemoteSessionCookies {
             continue;
         };
 
-        let Some((name, raw_value)) = raw_set_cookie.split(';').next().and_then(|pair| pair.split_once('=')) else {
+        let Some((name, raw_value)) = raw_set_cookie
+            .split(';')
+            .next()
+            .and_then(|pair| pair.split_once('='))
+        else {
             continue;
         };
 
@@ -429,8 +458,8 @@ fn build_remote_cookie_header(session: &InternalSession) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use time::OffsetDateTime;
     use reqwest::header::HeaderValue;
+    use time::OffsetDateTime;
 
     use crate::domain::session::SessionId;
 
@@ -440,7 +469,10 @@ mod tests {
             StatusCode::FOUND,
             Some("../usuario/inicio.html?foo=bar")
         ));
-        assert!(!is_login_success(StatusCode::OK, Some("../usuario/inicio.html")));
+        assert!(!is_login_success(
+            StatusCode::OK,
+            Some("../usuario/inicio.html")
+        ));
         assert!(!is_login_success(StatusCode::FOUND, Some("/other")));
     }
 

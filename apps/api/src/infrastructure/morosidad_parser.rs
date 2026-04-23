@@ -42,7 +42,8 @@ impl MorosidadParser for ScraperMorosidadParser {
 }
 
 fn parse_summary_kv(document: &Html) -> HashMap<String, String> {
-    let selector = Selector::parse("div.contentInstrucciones div.destacado span").expect("valid selector");
+    let selector =
+        Selector::parse("div.contentInstrucciones div.destacado span").expect("valid selector");
 
     let mut values = HashMap::new();
     for span in document.select(&selector) {
@@ -83,14 +84,22 @@ fn parse_records(document: &Html) -> Result<Vec<MorosidadRecord>, MorosidadHtmlP
 
         let mut rows: Vec<Vec<String>> = table
             .select(&row_selector)
-            .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+            .map(|row| {
+                row.select(&cell_selector)
+                    .map(|cell| element_text(&cell))
+                    .collect::<Vec<_>>()
+            })
             .filter(|cells| !cells.is_empty())
             .collect();
 
         if rows.is_empty() {
             rows = table
                 .select(&fallback_row_selector)
-                .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+                .map(|row| {
+                    row.select(&cell_selector)
+                        .map(|cell| element_text(&cell))
+                        .collect::<Vec<_>>()
+                })
                 .filter(|cells| !cells.is_empty())
                 .collect();
         }
@@ -135,8 +144,7 @@ fn derive_status(records: &[MorosidadRecord]) -> MorosidadStatus {
             && balance_normalized != "0"
             && balance_normalized != "000"
             && balance_normalized != "0000"
-            && balance_normalized != "000000"
-            && balance_normalized != "000";
+            && balance_normalized != "000000";
 
         if has_numeric_debt || message.contains("deuda") || message.contains("moros") {
             has_debt = true;
@@ -161,7 +169,9 @@ fn get_cell(cells: &[String], idx: Option<usize>) -> Option<String> {
 }
 
 fn split_label_value(input: &str) -> Option<(&str, &str)> {
-    input.split_once(':').map(|(label, value)| (label.trim(), value.trim()))
+    input
+        .split_once(':')
+        .map(|(label, value)| (label.trim(), value.trim()))
 }
 
 fn element_text(element: &ElementRef<'_>) -> String {
@@ -182,9 +192,7 @@ fn canonicalize(input: &str) -> String {
         .replace('ó', "o")
         .replace('ú', "u")
         .replace('ñ', "n")
-        .replace('.', "")
-        .replace(',', "")
-        .replace('$', "")
+        .replace(['.', ',', '$'], "")
 }
 
 #[cfg(test)]

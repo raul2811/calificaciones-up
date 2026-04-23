@@ -11,8 +11,12 @@ use crate::{
     api::state::ApiState,
     application::{
         login_use_case::{LoginCommand, LoginUseCase, LoginUseCaseError},
-        student_avance_use_case::{GetStudentAvanceCommand, GetStudentAvanceError, GetStudentAvanceUseCase},
-        student_photo_use_case::{GetStudentPhotoCommand, GetStudentPhotoError, GetStudentPhotoUseCase},
+        student_avance_use_case::{
+            GetStudentAvanceCommand, GetStudentAvanceError, GetStudentAvanceUseCase,
+        },
+        student_photo_use_case::{
+            GetStudentPhotoCommand, GetStudentPhotoError, GetStudentPhotoUseCase,
+        },
     },
     domain::error::AppError,
     domain::session::SessionId,
@@ -40,17 +44,23 @@ pub struct AuthSessionResponse {
     pub authenticated: bool,
 }
 
-pub async fn health(State(state): State<ApiState>) -> Result<Json<crate::domain::health::HealthResponse>, AppError> {
+pub async fn health(
+    State(state): State<ApiState>,
+) -> Result<Json<crate::domain::health::HealthResponse>, AppError> {
     let _origin = &state.config.frontend_origin;
     let _session_repo = &state.app_state.session_repository;
     let _remote_client = &state.app_state.remote_login_client;
     Ok(Json(state.health_service.get_health()))
 }
 
-pub async fn ready(State(state): State<ApiState>) -> Result<Json<crate::domain::health::ReadyResponse>, AppError> {
+pub async fn ready(
+    State(state): State<ApiState>,
+) -> Result<Json<crate::domain::health::ReadyResponse>, AppError> {
     let readiness = state.health_service.get_readiness();
     if !readiness.ready {
-        return Err(AppError::ServiceUnavailable("Service not ready.".to_string()));
+        return Err(AppError::ServiceUnavailable(
+            "Service not ready.".to_string(),
+        ));
     }
 
     Ok(Json(readiness))
@@ -98,7 +108,8 @@ pub async fn auth_session(
     jar: CookieJar,
 ) -> Result<Json<AuthSessionResponse>, AppError> {
     let session_id = extract_session_id(&jar)?;
-    let parsed_id = SessionId::try_new(session_id).map_err(|_| AppError::Unauthorized("No autenticado.".to_string()))?;
+    let parsed_id = SessionId::try_new(session_id)
+        .map_err(|_| AppError::Unauthorized("No autenticado.".to_string()))?;
 
     let maybe_session = state
         .app_state
@@ -218,25 +229,35 @@ fn extract_session_id(jar: &CookieJar) -> Result<String, AppError> {
 fn map_login_error(error: LoginUseCaseError) -> AppError {
     match error {
         LoginUseCaseError::InvalidInput(validation) => AppError::BadRequest(validation.to_string()),
-        LoginUseCaseError::InvalidCredentials => AppError::Unauthorized("Credenciales invalidas.".to_string()),
-        LoginUseCaseError::RemoteClient(_) => AppError::BadGateway("Error autenticando contra Matricula UP.".to_string()),
-        LoginUseCaseError::SessionStore(_) => AppError::Internal("No fue posible crear sesion interna.".to_string()),
+        LoginUseCaseError::InvalidCredentials => {
+            AppError::Unauthorized("Credenciales invalidas.".to_string())
+        }
+        LoginUseCaseError::RemoteClient(_) => {
+            AppError::BadGateway("Error autenticando contra Matricula UP.".to_string())
+        }
+        LoginUseCaseError::SessionStore(_) => {
+            AppError::Internal("No fue posible crear sesion interna.".to_string())
+        }
     }
 }
 
 fn map_get_avance_error(error: GetStudentAvanceError) -> AppError {
     match error {
-        GetStudentAvanceError::Unauthorized => AppError::Unauthorized("No autenticado.".to_string()),
+        GetStudentAvanceError::Unauthorized => {
+            AppError::Unauthorized("No autenticado.".to_string())
+        }
         GetStudentAvanceError::RemoteSessionExpired => {
             AppError::Unauthorized("Sesion remota expirada.".to_string())
         }
-        GetStudentAvanceError::ParseFailed => {
-            AppError::BadGateway("No fue posible interpretar el avance academico remoto.".to_string())
-        }
+        GetStudentAvanceError::ParseFailed => AppError::BadGateway(
+            "No fue posible interpretar el avance academico remoto.".to_string(),
+        ),
         GetStudentAvanceError::Upstream => {
             AppError::BadGateway("Error consultando Matricula UP.".to_string())
         }
-        GetStudentAvanceError::Internal => AppError::Internal("Error interno de sesion.".to_string()),
+        GetStudentAvanceError::Internal => {
+            AppError::Internal("Error interno de sesion.".to_string())
+        }
     }
 }
 
@@ -246,8 +267,12 @@ fn map_get_photo_error(error: GetStudentPhotoError) -> AppError {
             AppError::Unauthorized("No autenticado.".to_string())
         }
         GetStudentPhotoError::NotFound => AppError::NotFound("Foto no disponible.".to_string()),
-        GetStudentPhotoError::Upstream => AppError::BadGateway("Error consultando foto remota.".to_string()),
-        GetStudentPhotoError::Internal => AppError::Internal("Error interno de sesion.".to_string()),
+        GetStudentPhotoError::Upstream => {
+            AppError::BadGateway("Error consultando foto remota.".to_string())
+        }
+        GetStudentPhotoError::Internal => {
+            AppError::Internal("Error interno de sesion.".to_string())
+        }
     }
 }
 

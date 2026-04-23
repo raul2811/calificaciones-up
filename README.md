@@ -249,6 +249,62 @@ Entonces:
 - `NEXT_PUBLIC_SITE_URL=https://calificaciones.tu-dominio.com`
 - `FRONTEND_ORIGIN=https://calificaciones.tu-dominio.com`
 
+## CI/CD y DevOps
+
+Workflows principales:
+
+- `CI`: corre en `push`, `pull_request` y manual para el backend Rust. Ejecuta `fmt`, `clippy` y `test`.
+- `Security`: corre separado del CI normal y valida advisories, bans y licencias con `cargo audit` y `cargo deny`.
+- `Docker`: construye y hace smoke-test de las imagenes `api` y `web`; publica en GHCR solo en `main` y tags compatibles.
+- `Codex Manual`: workflow manual para ejecutar tareas puntuales con Codex sobre el repo.
+- `Codex Review`: revision opcional de PR con Codex. Solo corre si el repositorio define `CODEX_REVIEW_ENABLED=true`.
+- `Codex Autofix`: auto-fix opcional disparado por `workflow_run` cuando falla `CI`. Solo corre si `CODEX_AUTOFIX_ENABLED=true`, crea rama/PR separada y no hace merge automatico.
+
+Que valida cada uno:
+
+- `CI` asegura calidad base de Rust sobre `apps/api`.
+- `Security` cubre vulnerabilidades conocidas, licencias permitidas y politicas de dependencias.
+- `Docker` valida que las imagenes realmente construyen y arrancan; cuando publica, tambien genera attestation/provenance para las imagenes subidas.
+
+Secrets y variables necesarios:
+
+- `OPENAI_API_KEY`: requerido para los workflows de Codex.
+- `CODEX_REVIEW_ENABLED=true`: habilita la revision automatica de PR.
+- `CODEX_AUTOFIX_ENABLED=true`: habilita el autofix automatizado tras fallo de `CI`.
+
+Validaciones locales recomendadas:
+
+```bash
+cd apps/api
+cargo fmt --all -- --check
+cargo clippy --workspace --all-targets --all-features -- -D warnings
+cargo test --workspace --all-features
+
+cd ../..
+cargo audit --file apps/api/Cargo.lock
+cargo deny check --manifest-path apps/api/Cargo.toml advisories bans licenses
+npm run docker:build:api
+npm run docker:build:web
+```
+
+Publicacion de imagen:
+
+- La publicacion automatica ocurre desde `docker.yml` hacia `ghcr.io` solo en `push` a `main` y en tags.
+- El tagging usa `sha-<sha_corto>`, tag/branch cuando aplica y `latest` solo para la rama por defecto.
+- No se publica desde PRs ni desde forks via eventos de PR.
+
+Integracion con Codex:
+
+- Codex no recibe credenciales embebidas; usa `OPENAI_API_KEY` desde secrets.
+- `Codex Review` trabaja en modo de solo lectura.
+- `Codex Autofix` trabaja en rama separada y abre PR en lugar de hacer push a `main`.
+
+Limitaciones actuales y siguientes mejoras:
+
+- El pipeline va a exponer problemas reales del codigo actual: hoy `cargo fmt --check` y `clippy -D warnings` no pasan en `apps/api`.
+- La provenance protege el origen y el flujo de build de imagenes publicadas, pero no sustituye auditorias de codigo, SBOM ni hardening de runtime.
+- Mejoras razonables siguientes: fijar SHAs de actions externas, agregar SBOM, introducir una matriz adicional de Rust (`stable` + `beta` o MSRV) y separar release formal de binarios si el proyecto la necesita.
+
 ## Licencia
 
 Este proyecto se distribuye bajo `GNU Affero General Public License v3.0 o posterior (AGPL-3.0-or-later)`.

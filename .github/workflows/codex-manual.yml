@@ -1,0 +1,50 @@
+name: Codex Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Task for Codex to execute on the repository
+        required: true
+        type: string
+      working_directory:
+        description: Working directory for Codex
+        required: false
+        default: .
+        type: string
+      sandbox:
+        description: Codex sandbox mode
+        required: false
+        default: workspace-write
+        type: choice
+        options:
+          - read-only
+          - workspace-write
+
+jobs:
+  codex:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Run Codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          working-directory: ${{ inputs.working_directory }}
+          sandbox: ${{ inputs.sandbox }}
+          safety-strategy: drop-sudo
+          output-file: codex-manual.md
+          prompt: ${{ inputs.task }}
+
+      - name: Upload Codex report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-manual-report
+          path: codex-manual.md
+          if-no-files-found: ignore

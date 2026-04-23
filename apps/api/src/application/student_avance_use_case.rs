@@ -6,8 +6,8 @@ use time::OffsetDateTime;
 
 use crate::{
     application::{
-        academic_record_consolidator::consolidate_academic_record,
         academic_progress_parser::{AcademicProgressParser, AcademicProgressParserError},
+        academic_record_consolidator::consolidate_academic_record,
         morosidad_parser::{MorosidadParser, MorosidadParserError},
         notes_credits_parser::{NotesCreditsParser, NotesCreditsParserError},
         professors_parser::{ProfessorsParser, ProfessorsParserError},
@@ -64,7 +64,8 @@ impl GetStudentAvanceUseCase {
         &self,
         command: GetStudentAvanceCommand,
     ) -> Result<AcademicProgress, GetStudentAvanceError> {
-        let session_id = SessionId::try_new(command.session_id).map_err(|_| GetStudentAvanceError::Unauthorized)?;
+        let session_id = SessionId::try_new(command.session_id)
+            .map_err(|_| GetStudentAvanceError::Unauthorized)?;
 
         let Some(session) = self
             .session_repository
@@ -90,10 +91,7 @@ impl GetStudentAvanceUseCase {
             Err(RemoteFetchError::Upstream) => return Err(GetStudentAvanceError::Upstream),
         };
 
-        let parsed_avance = self
-            .avance_parser
-            .parse(&html)
-            .map_err(map_parser_error)?;
+        let parsed_avance = self.avance_parser.parse(&html).map_err(map_parser_error)?;
 
         let notas_records = match self.remote_login_client.fetch_notas_html(&session).await {
             Ok(notas_html) => self
@@ -108,7 +106,11 @@ impl GetStudentAvanceUseCase {
             Err(RemoteFetchError::Upstream) => Vec::new(),
         };
 
-        let professors = match self.remote_login_client.fetch_profesores_html(&session).await {
+        let professors = match self
+            .remote_login_client
+            .fetch_profesores_html(&session)
+            .await
+        {
             Ok(profesores_html) => self
                 .professors_parser
                 .parse(&profesores_html)
@@ -121,7 +123,11 @@ impl GetStudentAvanceUseCase {
             Err(RemoteFetchError::Upstream) => Vec::new(),
         };
 
-        let morosidad = match self.remote_login_client.fetch_morosidad_html(&session).await {
+        let morosidad = match self
+            .remote_login_client
+            .fetch_morosidad_html(&session)
+            .await
+        {
             Ok(morosidad_html) => self
                 .morosidad_parser
                 .parse(&morosidad_html)
@@ -134,7 +140,8 @@ impl GetStudentAvanceUseCase {
             Err(RemoteFetchError::Upstream) => None,
         };
 
-        let merged = consolidate_academic_record(parsed_avance, notas_records, professors, morosidad);
+        let merged =
+            consolidate_academic_record(parsed_avance, notas_records, professors, morosidad);
 
         self.session_repository
             .touch_last_used(&session_id, now)
@@ -182,7 +189,10 @@ mod tests {
             session_repository::SessionRepository,
         },
         domain::{
-            academic_progress::{AvanceAcademicData, MorosidadRecord, MorosidadStatus, MorosidadSummary, ProfessorRecord, StudentAcademicSummary, SubjectGradeRecord, SubjectRecord},
+            academic_progress::{
+                AvanceAcademicData, MorosidadRecord, MorosidadStatus, MorosidadSummary,
+                ProfessorRecord, StudentAcademicSummary, SubjectGradeRecord, SubjectRecord,
+            },
             credentials::RemoteLoginCredentials,
             session::InternalSession,
         },
@@ -220,7 +230,10 @@ mod tests {
             Ok(())
         }
 
-        async fn remove_expired(&self, _now: OffsetDateTime) -> Result<usize, SessionRepositoryError> {
+        async fn remove_expired(
+            &self,
+            _now: OffsetDateTime,
+        ) -> Result<usize, SessionRepositoryError> {
             Ok(0)
         }
     }
@@ -280,10 +293,12 @@ mod tests {
             crate::application::remote_login_client::RemotePhotoPayload,
             crate::application::remote_login_client::RemotePhotoFetchError,
         > {
-            Ok(crate::application::remote_login_client::RemotePhotoPayload {
-                content_type: Some("image/jpeg".to_string()),
-                bytes: vec![0, 1, 2],
-            })
+            Ok(
+                crate::application::remote_login_client::RemotePhotoPayload {
+                    content_type: Some("image/jpeg".to_string()),
+                    bytes: vec![0, 1, 2],
+                },
+            )
         }
     }
 
@@ -370,9 +385,7 @@ mod tests {
         let now = OffsetDateTime::now_utc();
         let session = InternalSession::new(SessionId::generate(), now).with_authenticated(true);
         let session_id = session.session_id.as_str().to_string();
-        repo.save(session)
-            .await
-            .unwrap();
+        repo.save(session).await.unwrap();
 
         let use_case = GetStudentAvanceUseCase::new(
             repo,
@@ -387,13 +400,13 @@ mod tests {
             }),
             Arc::new(NotesParserStub { result: Ok(vec![]) }),
             Arc::new(ProfessorsParserStub { result: Ok(vec![]) }),
-            Arc::new(MorosidadParserStub { result: Ok(sample_morosidad()) }),
+            Arc::new(MorosidadParserStub {
+                result: Ok(sample_morosidad()),
+            }),
         );
 
         let result = use_case
-            .execute(GetStudentAvanceCommand {
-                session_id,
-            })
+            .execute(GetStudentAvanceCommand { session_id })
             .await
             .unwrap();
 
@@ -422,7 +435,9 @@ mod tests {
             }),
             Arc::new(NotesParserStub { result: Ok(vec![]) }),
             Arc::new(ProfessorsParserStub { result: Ok(vec![]) }),
-            Arc::new(MorosidadParserStub { result: Ok(sample_morosidad()) }),
+            Arc::new(MorosidadParserStub {
+                result: Ok(sample_morosidad()),
+            }),
         );
 
         let result = use_case
@@ -455,7 +470,9 @@ mod tests {
             }),
             Arc::new(NotesParserStub { result: Ok(vec![]) }),
             Arc::new(ProfessorsParserStub { result: Ok(vec![]) }),
-            Arc::new(MorosidadParserStub { result: Ok(sample_morosidad()) }),
+            Arc::new(MorosidadParserStub {
+                result: Ok(sample_morosidad()),
+            }),
         );
 
         let result = use_case

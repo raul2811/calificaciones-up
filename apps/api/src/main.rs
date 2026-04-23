@@ -8,12 +8,9 @@ use std::sync::Arc;
 use application::AppState;
 use dotenvy::dotenv;
 use infrastructure::{
-    avance_parser::ScraperAcademicProgressParser,
-    config::Config,
-    matricula_client::MatriculaUpClient,
-    morosidad_parser::ScraperMorosidadParser,
-    notas_parser::ScraperNotesCreditsParser,
-    observability::init_tracing,
+    avance_parser::ScraperAcademicProgressParser, config::Config,
+    matricula_client::MatriculaUpClient, morosidad_parser::ScraperMorosidadParser,
+    notas_parser::ScraperNotesCreditsParser, observability::init_tracing,
     profesores_parser::ScraperProfessorsParser,
     session_repository_in_memory::InMemorySessionRepository,
 };

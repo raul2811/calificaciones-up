@@ -2,12 +2,9 @@ use std::sync::Arc;
 
 use crate::{
     application::{
-        academic_progress_parser::AcademicProgressParser,
-        health_service::HealthService,
-        morosidad_parser::MorosidadParser,
-        notes_credits_parser::NotesCreditsParser,
-        professors_parser::ProfessorsParser,
-        AppState,
+        academic_progress_parser::AcademicProgressParser, health_service::HealthService,
+        morosidad_parser::MorosidadParser, notes_credits_parser::NotesCreditsParser,
+        professors_parser::ProfessorsParser, AppState,
     },
     infrastructure::config::Config,
 };

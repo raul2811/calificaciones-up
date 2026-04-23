@@ -173,10 +173,7 @@ fn normalize_taken_semester(value: Option<String>) -> Option<String> {
 }
 
 fn semester_type_to_taken_semester(value: &Option<String>) -> Option<String> {
-    let normalized = value
-        .as_ref()
-        .map(|v| normalize(v))
-        .unwrap_or_default();
+    let normalized = value.as_ref().map(|v| normalize(v)).unwrap_or_default();
 
     if normalized.contains("primer") {
         return Some("1".to_string());
@@ -208,7 +205,13 @@ fn push_history(
     points: Option<String>,
     index_value: Option<String>,
 ) {
-    if label.is_none() && year.is_none() && sem_type.is_none() && grade.is_none() && points.is_none() && index_value.is_none() {
+    if label.is_none()
+        && year.is_none()
+        && sem_type.is_none()
+        && grade.is_none()
+        && points.is_none()
+        && index_value.is_none()
+    {
         return;
     }
 
@@ -265,7 +268,10 @@ fn absorb_avance(acc: &mut CanonicalAccumulator, subject: &SubjectRecord) {
     maybe_set(&mut acc.plan_year, option_text(&subject.plan_year));
     maybe_set(&mut acc.plan_semester, option_text(&subject.plan_semester));
     maybe_set(&mut acc.taken_year, option_text(&subject.taken_year));
-    maybe_set(&mut acc.taken_semester, option_text(&subject.taken_semester));
+    maybe_set(
+        &mut acc.taken_semester,
+        option_text(&subject.taken_semester),
+    );
     maybe_set(&mut acc.observation, option_text(&subject.observation));
 
     let candidate = candidate_from_grade(
@@ -298,7 +304,8 @@ fn absorb_notas(acc: &mut CanonicalAccumulator, row: &SubjectGradeRecord) {
     maybe_set(&mut acc.taken_year, option_text(&row.period_year));
     maybe_set(
         &mut acc.taken_semester,
-        semester_type_to_taken_semester(&row.period_semester_type).or_else(|| option_text(&row.period_semester_type)),
+        semester_type_to_taken_semester(&row.period_semester_type)
+            .or_else(|| option_text(&row.period_semester_type)),
     );
 
     let candidate = candidate_from_grade(
@@ -351,13 +358,15 @@ pub fn consolidate_academic_record(
     let mut by_key: HashMap<String, CanonicalAccumulator> = HashMap::new();
 
     for subject in &avance.subjects {
-        let key = canonical_key(&subject.code, &subject.name).unwrap_or_else(|| format!("avance:unknown:{}", by_key.len()));
+        let key = canonical_key(&subject.code, &subject.name)
+            .unwrap_or_else(|| format!("avance:unknown:{}", by_key.len()));
         let entry = by_key.entry(key).or_insert_with(empty_accumulator);
         absorb_avance(entry, subject);
     }
 
     for row in &notas_records {
-        let key = canonical_key(&row.code, &row.name).unwrap_or_else(|| format!("notas:unknown:{}", by_key.len()));
+        let key = canonical_key(&row.code, &row.name)
+            .unwrap_or_else(|| format!("notas:unknown:{}", by_key.len()));
         let entry = by_key.entry(key).or_insert_with(empty_accumulator);
         absorb_notas(entry, row);
     }
@@ -384,11 +393,12 @@ pub fn consolidate_academic_record(
                     .as_ref()
                     .and_then(|value| value.period_year.clone())
                     .or(acc.taken_year),
-                taken_semester: normalize_taken_semester(acc
-                    .best_grade
-                    .as_ref()
-                    .and_then(|value| value.period_semester_type.clone())
-                    .or(acc.taken_semester)),
+                taken_semester: normalize_taken_semester(
+                    acc.best_grade
+                        .as_ref()
+                        .and_then(|value| value.period_semester_type.clone())
+                        .or(acc.taken_semester),
+                ),
                 attempts_count: acc.attempts_count,
                 source_flags: acc.source_flags,
                 observation: acc.observation,
@@ -406,9 +416,12 @@ pub fn consolidate_academic_record(
         let left_code = left.code.clone().unwrap_or_default();
         let right_code = right.code.clone().unwrap_or_default();
 
-        left_code
-            .cmp(&right_code)
-            .then_with(|| left.name.clone().unwrap_or_default().cmp(&right.name.clone().unwrap_or_default()))
+        left_code.cmp(&right_code).then_with(|| {
+            left.name
+                .clone()
+                .unwrap_or_default()
+                .cmp(&right.name.clone().unwrap_or_default())
+        })
     });
 
     AcademicProgress {
@@ -422,7 +435,9 @@ pub fn consolidate_academic_record(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::academic_progress::{SubjectGradeRecord, SubjectRecord, StudentAcademicSummary};
+    use crate::domain::academic_progress::{
+        StudentAcademicSummary, SubjectGradeRecord, SubjectRecord,
+    };
 
     fn sample_student() -> StudentAcademicSummary {
         StudentAcademicSummary {
@@ -564,7 +579,11 @@ mod tests {
         assert_eq!(merged.subjects.len(), 1);
         assert_eq!(merged.subjects[0].code.as_deref(), Some("12345"));
         assert_eq!(merged.subjects[0].best_grade.as_deref(), Some("B"));
-        assert!(merged.subjects[0].source_flags.from_notas_creditos_completos);
+        assert!(
+            merged.subjects[0]
+                .source_flags
+                .from_notas_creditos_completos
+        );
     }
 
     #[test]

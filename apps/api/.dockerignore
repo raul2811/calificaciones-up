@@ -1,4 +1,7 @@
 target/
+.git
+.github
 .env
 .env.*
+README.md
 tests/

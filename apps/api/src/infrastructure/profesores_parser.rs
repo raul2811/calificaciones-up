@@ -18,7 +18,8 @@ pub struct ScraperProfessorsParser;
 impl MisProfesoresParser {
     pub fn parse(html: &str) -> Result<Vec<ProfessorRecord>, ProfesoresParserError> {
         let document = Html::parse_document(html);
-        let block_selector = Selector::parse("h1,h2,h3,h4,h5,h6,strong,p,table").expect("valid selector");
+        let block_selector =
+            Selector::parse("h1,h2,h3,h4,h5,h6,strong,p,table").expect("valid selector");
 
         let mut records = Vec::new();
         let mut current_period_label: Option<String> = None;
@@ -54,7 +55,10 @@ impl ProfessorsParser for ScraperProfessorsParser {
     }
 }
 
-fn parse_professors_table(table: &ElementRef<'_>, period_label: Option<String>) -> Vec<ProfessorRecord> {
+fn parse_professors_table(
+    table: &ElementRef<'_>,
+    period_label: Option<String>,
+) -> Vec<ProfessorRecord> {
     let header_selector = Selector::parse("thead th").expect("valid selector");
     let row_selector = Selector::parse("tbody tr").expect("valid selector");
     let fallback_row_selector = Selector::parse("tr").expect("valid selector");
@@ -88,14 +92,22 @@ fn parse_professors_table(table: &ElementRef<'_>, period_label: Option<String>) 
 
     let mut rows: Vec<Vec<String>> = table
         .select(&row_selector)
-        .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+        .map(|row| {
+            row.select(&cell_selector)
+                .map(|cell| element_text(&cell))
+                .collect::<Vec<_>>()
+        })
         .filter(|cells| !cells.is_empty())
         .collect();
 
     if rows.is_empty() {
         rows = table
             .select(&fallback_row_selector)
-            .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+            .map(|row| {
+                row.select(&cell_selector)
+                    .map(|cell| element_text(&cell))
+                    .collect::<Vec<_>>()
+            })
             .filter(|cells| !cells.is_empty())
             .collect();
     }
@@ -126,13 +138,16 @@ fn parse_professors_table(table: &ElementRef<'_>, period_label: Option<String>) 
                 .map(|value| canonicalize(value))
                 .unwrap_or_default();
 
-            let assignment_pending = normalized_professor.is_empty() || normalized_professor == "nombrar por";
+            let assignment_pending =
+                normalized_professor.is_empty() || normalized_professor == "nombrar por";
 
             ProfessorRecord {
                 source: "mis_profesores".to_string(),
                 academic_period_label: period_label.clone(),
                 period_year: period_label.as_ref().and_then(|label| extract_year(label)),
-                period_type: period_label.as_ref().and_then(|label| extract_period_type(label)),
+                period_type: period_label
+                    .as_ref()
+                    .and_then(|label| extract_period_type(label)),
                 c_hor: get_cell(&cells, c_hor_idx),
                 code: get_cell(&cells, code_idx),
                 name: get_cell(&cells, name_idx),
@@ -157,8 +172,12 @@ fn table_looks_like_professors(table: &ElementRef<'_>) -> bool {
     }
 
     let has_professor = headers.iter().any(|header| header.contains("profesor"));
-    let has_email = headers.iter().any(|header| header.contains("correo") || header.contains("email"));
-    let has_subject = headers.iter().any(|header| header.contains("asig") || header.contains("denominacion"));
+    let has_email = headers
+        .iter()
+        .any(|header| header.contains("correo") || header.contains("email"));
+    let has_subject = headers
+        .iter()
+        .any(|header| header.contains("asig") || header.contains("denominacion"));
 
     has_professor && has_email && has_subject
 }
@@ -172,7 +191,9 @@ fn get_cell(cells: &[String], idx: Option<usize>) -> Option<String> {
 fn looks_like_period_label(value: &str) -> bool {
     let normalized = canonicalize(value);
 
-    (normalized.contains("semestre") || normalized.contains("anuales") || normalized.contains("anual"))
+    (normalized.contains("semestre")
+        || normalized.contains("anuales")
+        || normalized.contains("anual"))
         && extract_year(value).is_some()
 }
 
@@ -261,6 +282,9 @@ mod tests {
 
         assert_eq!(rows[1].code.as_deref(), Some("10147"));
         assert!(!rows[1].assignment_pending);
-        assert_eq!(rows[1].professor_email.as_deref(), Some("shissel.concepcion@up.ac.pa"));
+        assert_eq!(
+            rows[1].professor_email.as_deref(),
+            Some("shissel.concepcion@up.ac.pa")
+        );
     }
 }

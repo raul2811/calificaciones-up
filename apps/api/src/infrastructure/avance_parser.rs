@@ -26,7 +26,10 @@ impl AvanceAcademicoParser {
         let profile_kv = parse_profile_kv(&document);
 
         let first_name = profile_kv.get("nombre").cloned().unwrap_or_default();
-        let apellido = profile_kv.get("apellido paterno").cloned().unwrap_or_default();
+        let apellido = profile_kv
+            .get("apellido paterno")
+            .cloned()
+            .unwrap_or_default();
         let name = normalize_text(&format!("{} {}", first_name, apellido));
 
         let student = StudentAcademicSummary {
@@ -51,7 +54,8 @@ impl AcademicProgressParser for ScraperAcademicProgressParser {
 }
 
 fn parse_summary_kv(document: &Html) -> HashMap<String, String> {
-    let selector = Selector::parse("div.contentInstrucciones div.destacado span").expect("valid selector");
+    let selector =
+        Selector::parse("div.contentInstrucciones div.destacado span").expect("valid selector");
 
     let mut values = HashMap::new();
     for span in document.select(&selector) {
@@ -65,7 +69,8 @@ fn parse_summary_kv(document: &Html) -> HashMap<String, String> {
 }
 
 fn parse_profile_kv(document: &Html) -> HashMap<String, String> {
-    let selector = Selector::parse("div.contentInstrucciones table.display p.fltlft.peq").expect("valid selector");
+    let selector = Selector::parse("div.contentInstrucciones table.display p.fltlft.peq")
+        .expect("valid selector");
 
     let mut values = HashMap::new();
     for p in document.select(&selector) {
@@ -209,7 +214,9 @@ fn get_cell(cells: &[String], idx: Option<usize>) -> Option<String> {
 }
 
 fn split_label_value(input: &str) -> Option<(&str, &str)> {
-    input.split_once(':').map(|(label, value)| (label.trim(), value.trim()))
+    input
+        .split_once(':')
+        .map(|(label, value)| (label.trim(), value.trim()))
 }
 
 fn require_map_value(
@@ -259,7 +266,10 @@ fn looks_like_grade_value(value: &str) -> bool {
     }
 
     let token = normalized.split_whitespace().next().unwrap_or_default();
-    if matches!(token, "a" | "b" | "c" | "d" | "f" | "s" | "p" | "r" | "i" | "n" | "np" | "na") {
+    if matches!(
+        token,
+        "a" | "b" | "c" | "d" | "f" | "s" | "p" | "r" | "i" | "n" | "np" | "na"
+    ) {
         return true;
     }
 
@@ -347,7 +357,10 @@ mod tests {
 
         assert_eq!(parsed.subjects.len(), 1);
         assert_eq!(parsed.subjects[0].status.as_deref(), Some("Aprobada"));
-        assert_eq!(parsed.subjects[0].observation.as_deref(), Some("Sin observaciones"));
+        assert_eq!(
+            parsed.subjects[0].observation.as_deref(),
+            Some("Sin observaciones")
+        );
     }
 
     #[test]
@@ -395,6 +408,9 @@ mod tests {
         assert_eq!(subject.grade.as_deref(), Some("F"));
         assert_eq!(subject.taken_year.as_deref(), Some("2026"));
         assert_eq!(subject.taken_semester.as_deref(), Some("1"));
-        assert_eq!(subject.observation.as_deref(), Some("X PROFESOR NO HA ENTREGADO NOTA"));
+        assert_eq!(
+            subject.observation.as_deref(),
+            Some("X PROFESOR NO HA ENTREGADO NOTA")
+        );
     }
 }

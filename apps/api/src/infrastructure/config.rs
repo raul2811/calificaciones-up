@@ -23,13 +23,14 @@ impl Config {
                 SocketAddr::from(([0, 0, 0, 0], port))
             });
 
-        let frontend_origin =
-            std::env::var("FRONTEND_ORIGIN").unwrap_or_else(|_| "http://localhost:3000".to_string());
+        let frontend_origin = std::env::var("FRONTEND_ORIGIN")
+            .unwrap_or_else(|_| "http://localhost:3000".to_string());
 
-        let log_level = std::env::var("RUST_LOG").unwrap_or_else(|_| "api=info,tower_http=info".to_string());
+        let log_level =
+            std::env::var("RUST_LOG").unwrap_or_else(|_| "api=info,tower_http=info".to_string());
 
-        let matricula_base_url =
-            std::env::var("MATRICULA_BASE_URL").unwrap_or_else(|_| "https://matricula.up.ac.pa".to_string());
+        let matricula_base_url = std::env::var("MATRICULA_BASE_URL")
+            .unwrap_or_else(|_| "https://matricula.up.ac.pa".to_string());
 
         let matricula_user_agent = std::env::var("MATRICULA_USER_AGENT").unwrap_or_else(|_| {
             "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"

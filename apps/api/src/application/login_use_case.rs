@@ -73,7 +73,9 @@ impl LoginUseCase {
 
         let remote_cookies = match remote_outcome {
             RemoteLoginOutcome::Authenticated(cookies) => cookies,
-            RemoteLoginOutcome::InvalidCredentials => return Err(LoginUseCaseError::InvalidCredentials),
+            RemoteLoginOutcome::InvalidCredentials => {
+                return Err(LoginUseCaseError::InvalidCredentials)
+            }
         };
 
         let now = OffsetDateTime::now_utc();
@@ -135,7 +137,10 @@ mod tests {
             Ok(())
         }
 
-        async fn remove_expired(&self, _now: OffsetDateTime) -> Result<usize, SessionRepositoryError> {
+        async fn remove_expired(
+            &self,
+            _now: OffsetDateTime,
+        ) -> Result<usize, SessionRepositoryError> {
             Ok(0)
         }
     }

@@ -7,11 +7,11 @@ use axum::{
 };
 use tower_http::{cors::CorsLayer, trace::TraceLayer};
 
-use crate::{application::AppState, infrastructure::config::Config};
 use crate::application::academic_progress_parser::AcademicProgressParser;
 use crate::application::morosidad_parser::MorosidadParser;
 use crate::application::notes_credits_parser::NotesCreditsParser;
 use crate::application::professors_parser::ProfessorsParser;
+use crate::{application::AppState, infrastructure::config::Config};
 
 use super::{handlers, state::ApiState};
 

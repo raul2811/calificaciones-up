@@ -20,7 +20,8 @@ impl NotasCreditosCompletosParser {
         let document = Html::parse_document(html);
 
         let tab_selector = Selector::parse("#tabsCreditComp").expect("valid selector");
-        let block_selector = Selector::parse("h1,h2,h3,h4,h5,h6,strong,caption,table").expect("valid selector");
+        let block_selector =
+            Selector::parse("h1,h2,h3,h4,h5,h6,strong,caption,table").expect("valid selector");
         let table_selector = Selector::parse("table").expect("valid selector");
 
         let Some(tab) = document.select(&tab_selector).next() else {
@@ -61,7 +62,10 @@ impl NotesCreditsParser for ScraperNotesCreditsParser {
     }
 }
 
-fn parse_table_records(table: &ElementRef<'_>, period_label: Option<String>) -> Vec<SubjectGradeRecord> {
+fn parse_table_records(
+    table: &ElementRef<'_>,
+    period_label: Option<String>,
+) -> Vec<SubjectGradeRecord> {
     let header_selector = Selector::parse("thead th").expect("valid selector");
     let row_selector = Selector::parse("tbody tr").expect("valid selector");
     let fallback_row_selector = Selector::parse("tr").expect("valid selector");
@@ -111,14 +115,22 @@ fn parse_table_records(table: &ElementRef<'_>, period_label: Option<String>) -> 
 
     let mut rows: Vec<Vec<String>> = table
         .select(&row_selector)
-        .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+        .map(|row| {
+            row.select(&cell_selector)
+                .map(|cell| element_text(&cell))
+                .collect::<Vec<_>>()
+        })
         .filter(|cells| !cells.is_empty())
         .collect();
 
     if rows.is_empty() {
         rows = table
             .select(&fallback_row_selector)
-            .map(|row| row.select(&cell_selector).map(|cell| element_text(&cell)).collect::<Vec<_>>())
+            .map(|row| {
+                row.select(&cell_selector)
+                    .map(|cell| element_text(&cell))
+                    .collect::<Vec<_>>()
+            })
             .filter(|cells| !cells.is_empty())
             .collect();
     }
@@ -156,7 +168,9 @@ fn parse_table_records(table: &ElementRef<'_>, period_label: Option<String>) -> 
             }
 
             let period_year = period_label.as_ref().and_then(|label| extract_year(label));
-            let period_semester_type = period_label.as_ref().and_then(|label| extract_semester_type(label));
+            let period_semester_type = period_label
+                .as_ref()
+                .and_then(|label| extract_semester_type(label));
 
             SubjectGradeRecord {
                 source: "notas_creditos_completos".to_string(),
@@ -186,7 +200,8 @@ fn get_cell(cells: &[String], idx: Option<usize>) -> Option<String> {
 fn looks_like_period_label(value: &str) -> bool {
     let normalized = canonicalize(value);
 
-    (normalized.contains("semestre") || normalized.contains("anual")) && extract_year(value).is_some()
+    (normalized.contains("semestre") || normalized.contains("anual"))
+        && extract_year(value).is_some()
 }
 
 fn extract_year(value: &str) -> Option<String> {
