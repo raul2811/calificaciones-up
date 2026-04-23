@@ -1,6 +1,5 @@
 # Edit this allow-list explicitly when dependency licenses change.
 [licenses]
-unlicensed = "deny"
 confidence-threshold = 0.8
 allow = [
   "MIT",
