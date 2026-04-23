@@ -1,7 +1,3 @@
-Este es una propuesta para transformar tu README actual en uno mucho más visual, profesional y fácil de navegar. He añadido **badges**, una estructura más clara, **emojis** para mejorar la escaneabilidad y tablas para la configuración.
-
----
-
 # 🎓 Calificaciones UP
 
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
