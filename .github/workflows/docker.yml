@@ -68,6 +68,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          platforms: linux/amd64
           build-args: ${{ matrix.build_args }}
           tags: local/${{ matrix.image }}:ci
           load: true
@@ -99,9 +100,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-      id-token: write
-      attestations: write
-      artifact-metadata: write
     strategy:
       fail-fast: false
       matrix:
@@ -150,6 +148,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          platforms: linux/amd64
           build-args: ${{ matrix.build_args }}
           push: true
           provenance: false
@@ -157,10 +156,3 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=publish-${{ matrix.id }}
           cache-to: type=gha,mode=max,scope=publish-${{ matrix.id }}
-
-      - name: Attest published image provenance
-        uses: actions/attest@v4
-        with:
-          subject-name: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
