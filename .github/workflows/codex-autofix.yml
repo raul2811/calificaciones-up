@@ -148,7 +148,7 @@ jobs:
           token: ${{ github.token }}
           branch: codex/auto-fix/${{ steps.context.outputs.branch_suffix }}
           base: ${{ steps.context.outputs.base_branch }}
-          commit-message: fix(ci): codex auto-fix for ${{ github.event.workflow_run.head_branch }}
+          commit-message: "fix(ci): codex auto-fix for ${{ github.event.workflow_run.head_branch }}"
           title: "[codex] Auto-fix CI failure on ${{ github.event.workflow_run.head_branch }}"
           body: |
             This PR was generated automatically after `CI` failed.
