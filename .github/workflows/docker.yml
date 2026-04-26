@@ -68,6 +68,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          platforms: linux/amd64
           build-args: ${{ matrix.build_args }}
           tags: local/${{ matrix.image }}:ci
           load: true
@@ -150,6 +151,7 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          platforms: linux/amd64
           build-args: ${{ matrix.build_args }}
           push: true
           provenance: false
