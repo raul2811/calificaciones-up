@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node .next/standalone/apps/web/server.js",
+    "start": "if [ -f server.js ]; then node server.js; else node .next/standalone/apps/web/server.js; fi",
     "lint": "next lint",
     "test": "vitest run"
   },
