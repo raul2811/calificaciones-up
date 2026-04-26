@@ -264,7 +264,7 @@ Que valida cada uno:
 
 - `CI` asegura calidad base de Rust sobre `apps/api`.
 - `Security` cubre vulnerabilidades conocidas, licencias permitidas y politicas de dependencias.
-- `Docker` valida que las imagenes realmente construyen y arrancan; cuando publica, tambien genera attestation/provenance para las imagenes subidas.
+- `Docker` valida que las imagenes realmente construyen y arrancan; cuando publica, etiqueta imagenes ejecutables para `linux/amd64` en GHCR.
 
 Secrets y variables necesarios:
 
