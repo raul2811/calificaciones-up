@@ -1,15 +1,18 @@
-FROM docker.io/library/node:20-bookworm-slim AS deps
+# syntax=docker/dockerfile:1.7
+
+FROM docker.io/oven/bun:1.3.12-debian AS deps
 
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY package.json package-lock.json ./
+COPY package.json bun.lock ./
 COPY apps/web/package.json ./apps/web/package.json
 
-RUN npm ci
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
 
-FROM docker.io/library/node:20-bookworm-slim AS builder
+FROM docker.io/oven/bun:1.3.12-debian AS builder
 
 WORKDIR /app
 
@@ -25,13 +28,15 @@ ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
-COPY --from=deps /app/package-lock.json ./package-lock.json
+COPY --from=deps /app/bun.lock ./bun.lock
 COPY --from=deps /app/apps/web/package.json ./apps/web/package.json
 COPY apps/web ./apps/web
 
-RUN npm run build --workspace=apps/web
+WORKDIR /app/apps/web
 
-FROM docker.io/library/node:20-bookworm-slim AS runner
+RUN bun run build
+
+FROM gcr.io/distroless/nodejs22-debian13:nonroot AS runner
 
 WORKDIR /app
 
@@ -40,12 +45,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
-COPY --from=builder --chown=node:node /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=node:node /app/apps/web/.next/static ./apps/web/.next/static
-#COPY --from=builder --chown=node:node /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=65532:65532 /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=65532:65532 /app/apps/web/.next/static ./apps/web/.next/static
+#COPY --from=builder --chown=65532:65532 /app/apps/web/public ./apps/web/public
 
-USER node
+USER 65532:65532
 
 EXPOSE 3000
 
-CMD ["node", "apps/web/server.js"]
+CMD ["apps/web/server.js"]

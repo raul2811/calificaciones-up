@@ -1,11 +1,11 @@
 [phases.setup]
-nixPkgs = ["nodejs_20"]
+nixPkgs = ["bun", "nodejs_22"]
 
 [phases.install]
-cmds = ["npm ci --include=dev"]
+cmds = ["bun install --frozen-lockfile"]
 
 [phases.build]
-cmds = ["npm run build:web"]
+cmds = ["bun run build:web"]
 
 [start]
 cmd = "node apps/web/.next/standalone/apps/web/server.js"

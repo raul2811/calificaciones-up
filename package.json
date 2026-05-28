@@ -1,11 +1,12 @@
 {
   "name": "calificaciones-up",
   "private": true,
+  "packageManager": "bun@1.3.12",
   "scripts": {
-    "build:web": "npm run build --workspace=apps/web",
-    "start:web": "npm run start --workspace=apps/web",
-    "lint:web": "npm run lint --workspace=apps/web",
-    "test:web": "npm run test --workspace=apps/web",
+    "build:web": "cd apps/web && bun run build",
+    "start:web": "cd apps/web && bun run start",
+    "lint:web": "cd apps/web && bun run lint",
+    "test:web": "cd apps/web && bun run test",
     "check:api": "cargo check --manifest-path apps/api/Cargo.toml",
     "docker:build:web": "docker build -f apps/web/Dockerfile -t calificaciones-up-web .",
     "docker:build:api": "docker build -t calificaciones-up-api apps/api",

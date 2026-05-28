@@ -8,9 +8,11 @@ on:
       - "apps/api/**"
       - "apps/web/**"
       - "package.json"
-      - "package-lock.json"
+      - "bun.lock"
       - ".dockerignore"
       - "apps/api/.dockerignore"
+      - "apps/api/Dockerfile"
+      - "apps/web/Dockerfile"
       - "compose.yaml"
       - ".github/workflows/docker.yml"
   pull_request:
@@ -19,9 +21,11 @@ on:
       - "apps/api/**"
       - "apps/web/**"
       - "package.json"
-      - "package-lock.json"
+      - "bun.lock"
       - ".dockerignore"
       - "apps/api/.dockerignore"
+      - "apps/api/Dockerfile"
+      - "apps/web/Dockerfile"
       - "compose.yaml"
       - ".github/workflows/docker.yml"
   workflow_dispatch:
@@ -73,6 +77,7 @@ jobs:
           tags: local/${{ matrix.image }}:ci
           load: true
           push: false
+          pull: true
           cache-from: type=gha,scope=${{ matrix.id }}
           cache-to: type=gha,mode=max,scope=${{ matrix.id }}
 
@@ -140,7 +145,6 @@ jobs:
             type=sha,prefix=sha-
             type=ref,event=branch
             type=ref,event=tag
-            type=raw,value=latest,enable={{is_default_branch}}
 
       - name: Build and publish image
         id: build
@@ -151,7 +155,9 @@ jobs:
           platforms: linux/amd64
           build-args: ${{ matrix.build_args }}
           push: true
-          provenance: false
+          pull: true
+          provenance: mode=max
+          sbom: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha,scope=publish-${{ matrix.id }}

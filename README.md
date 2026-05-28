@@ -67,8 +67,8 @@ El sistema emplea scraping seguro y controlado, limitado exclusivamente a la lec
 ## 🚀 Guia de Inicio Rapido
 
 ### Requisitos Previos
-- **Node.js** 20+
-- **npm**
+- **Node.js** 20+ para desarrollo local; las imagenes de produccion usan Node.js 22
+- **Bun** 1.3+
 - **Rust** y `cargo`
 - **Docker** opcional para despliegue local
 
@@ -87,7 +87,7 @@ El repositorio esta organizado por servicio para facilitar despliegues en plataf
 
 1. **Instalar dependencias:**
 ```bash
-npm install
+bun install
 ```
 
 2. **Configurar variables de entorno:**
@@ -99,7 +99,7 @@ cp apps/api/.env.example apps/api/.env
 3. **Ejecucion en desarrollo:**
 En terminales separadas:
 ```bash
-cd apps/web && npm run dev
+cd apps/web && bun run dev
 cd apps/api && cargo run
 ```
 
@@ -111,11 +111,11 @@ URLs locales:
 ### Comandos utiles
 
 ```bash
-npm run build:web
-npm run check:api
-npm run docker:build:web
-npm run docker:build:api
-npm run docker:up
+bun run build:web
+bun run check:api
+bun run docker:build:web
+bun run docker:build:api
+bun run docker:up
 ```
 
 ---
@@ -265,6 +265,7 @@ Que valida cada uno:
 - `CI` asegura calidad base de Rust sobre `apps/api`.
 - `Security` cubre vulnerabilidades conocidas, licencias permitidas y politicas de dependencias.
 - `Docker` valida que las imagenes realmente construyen y arrancan; cuando publica, etiqueta imagenes ejecutables para `linux/amd64` en GHCR.
+- Las imagenes de runtime son minimas: `api` compila un binario Rust estatico y corre en `scratch`; `web` usa el build `standalone` de Next.js sobre `gcr.io/distroless/nodejs22-debian13:nonroot`.
 
 Secrets y variables necesarios:
 
@@ -283,14 +284,14 @@ cargo test --workspace --all-features
 cd ../..
 cargo audit --file apps/api/Cargo.lock
 cargo deny check --manifest-path apps/api/Cargo.toml advisories bans licenses
-npm run docker:build:api
-npm run docker:build:web
+bun run docker:build:api
+bun run docker:build:web
 ```
 
 Publicacion de imagen:
 
 - La publicacion automatica ocurre desde `docker.yml` hacia `ghcr.io` solo en `push` a `main` y en tags.
-- El tagging usa `sha-<sha_corto>`, tag/branch cuando aplica y `latest` solo para la rama por defecto.
+- El tagging usa `sha-<sha_corto>` y tag/branch cuando aplica; no se publica `latest`, para evitar referencias mutables en produccion.
 - No se publica desde PRs ni desde forks via eventos de PR.
 
 Integracion con Codex:
@@ -302,8 +303,8 @@ Integracion con Codex:
 Limitaciones actuales y siguientes mejoras:
 
 - El pipeline va a exponer problemas reales del codigo actual: hoy `cargo fmt --check` y `clippy -D warnings` no pasan en `apps/api`.
-- La provenance protege el origen y el flujo de build de imagenes publicadas, pero no sustituye auditorias de codigo, SBOM ni hardening de runtime.
-- Mejoras razonables siguientes: fijar SHAs de actions externas, agregar SBOM, introducir una matriz adicional de Rust (`stable` + `beta` o MSRV) y separar release formal de binarios si el proyecto la necesita.
+- Las imagenes publicadas incluyen provenance y SBOM, pero eso no sustituye auditorias de codigo ni controles de runtime en Kubernetes.
+- Mejoras razonables siguientes: fijar SHAs de actions externas, agregar escaneo de imagen con Trivy/Grype, introducir una matriz adicional de Rust (`stable` + `beta` o MSRV) y separar release formal de binarios si el proyecto la necesita.
 
 ## Licencia
 
