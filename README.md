@@ -118,6 +118,16 @@ El despliegue de produccion ya esta preparado para Kubernetes:
 - Prometheus recolecta metricas del API via `ServiceMonitor`.
 - Grafana incluye un dashboard especifico de `calificaciones-up`.
 
+### Operacion Rapida
+
+- URL publica: `https://calificaciones.lab-citic.local`
+- API publica: `https://api.calificaciones.lab-citic.local`
+- Healthcheck API: `https://api.calificaciones.lab-citic.local/health`
+- Metrics API: `https://api.calificaciones.lab-citic.local/metrics`
+- Grafana: `https://grafana.lab-citic.local`
+- Rollback GitOps: volver el commit en `calificaciones-up` o en
+  `citic-plataforma` y refrescar Argo CD.
+
 ### Comandos utiles
 
 ```bash
