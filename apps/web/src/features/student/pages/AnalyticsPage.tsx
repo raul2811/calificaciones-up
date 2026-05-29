@@ -231,12 +231,11 @@ export function AnalyticsPage() {
       <div className="surface-panel rounded-[2rem] border border-[var(--border)] shadow-xl overflow-hidden animate-fade-in-up delay-300">
         {/* Header Tabs Premium */}
         <div className="p-2 bg-[var(--surface-muted)]/80 border-b border-[var(--border-soft)] backdrop-blur-md flex flex-wrap gap-2">
-          {[
-            { id: "indice", label: "Evolución de Índice" },
-            { id: "distribucion", label: "Distribución de Notas" },
-            { id: "progreso", label: "Esfuerzo por Semestre" },
-          ].map((tab) => {
-            const isActive = activeTab === tab.id;
+          {([
+          { id: "indice", label: "Evolución de Índice" },
+          { id: "distribucion", label: "Distribución de Notas" },
+          { id: "progreso", label: "Esfuerzo por Semestre" },
+            ] as const).map((tab) => {
 
             return (
               <button
