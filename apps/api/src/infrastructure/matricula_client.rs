@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 
 use std::fmt::{Display, Formatter};
+use std::time::Duration;
 
 use reqwest::{
     header::{HeaderMap, ACCEPT, CONTENT_TYPE, LOCATION, ORIGIN, REFERER, SET_COOKIE, USER_AGENT},
@@ -82,6 +83,8 @@ impl MatriculaUpClient {
 
         let http = reqwest::Client::builder()
             .redirect(Policy::none())
+            .timeout(Duration::from_secs(20))
+            .connect_timeout(Duration::from_secs(10))
             .build()
             .map_err(MatriculaClientError::RequestFailed)?;
 
