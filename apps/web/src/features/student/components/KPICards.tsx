@@ -70,6 +70,7 @@ export function KPICards({
           type="button"
           onClick={() => onCardClick?.(card.key)}
           disabled={!interactive}
+          aria-pressed={interactive ? activeKey === card.key : undefined}
           className={`rounded-[1.4rem] p-5 text-left transition-all duration-200 ${
             cardClasses(card.tone)
           } ${interactive ? "metric-card--interactive cursor-pointer" : ""} ${

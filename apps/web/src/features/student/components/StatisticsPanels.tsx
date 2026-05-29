@@ -41,13 +41,13 @@ export function StatisticsPanels({ kpi }: StatisticsPanelsProps) {
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3 text-sm">
-          <div className="surface-elevated rounded-lg p-3">
+          <div className="surface-elevated rounded-lg p-3 transition-transform duration-200 hover:-translate-y-0.5">
             <p className="text-xs uppercase tracking-wide text-foreground-muted">Promedio</p>
             <p className="mt-1 text-xl font-bold text-primary">
               {kpi.averageGrade === null ? "-" : kpi.averageGrade.toFixed(2)}
             </p>
           </div>
-          <div className="surface-elevated rounded-lg p-3">
+          <div className="surface-elevated rounded-lg p-3 transition-transform duration-200 hover:-translate-y-0.5">
             <p className="text-xs uppercase tracking-wide text-foreground-muted">Materias con nota</p>
             <p className="mt-1 text-xl font-bold text-primary">{kpi.gradedSubjects}</p>
           </div>

@@ -129,7 +129,7 @@ export function LoginForm() {
         <p className="text-sm text-foreground-muted">Acceso para estudiantes</p>
       </header>
 
-      <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[0.95fr_0.75fr] lg:items-center lg:px-6 lg:py-12">
+      <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[0.98fr_0.72fr] lg:items-center lg:px-6 lg:py-12">
         <article className="surface-hero hidden rounded-[2rem] p-10 lg:block">
           <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.24em]">Acceso institucional</p>
           <h1 className="mt-4 max-w-xl text-5xl font-semibold tracking-tight text-primary">
@@ -153,12 +153,14 @@ export function LoginForm() {
           </div>
         </article>
 
-        <article className="surface-hero w-full max-w-xl justify-self-center rounded-[2rem] p-8 sm:p-9">
+        <article className="surface-hero w-full max-w-xl justify-self-center rounded-[2rem] p-8 shadow-[0_28px_72px_-40px_rgba(15,23,42,0.35)] sm:p-9">
           <div className="mb-8">
             <div className="btn-primary mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-semibold">UP</div>
             <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.22em]">Iniciar sesion</p>
             <h2 className="mt-3 text-3xl font-semibold tracking-tight text-primary">{env.appName}</h2>
-            <p className="mt-3 text-sm leading-7 text-foreground-soft">Accede a tu historial academico con tus credenciales actuales.</p>
+            <p className="mt-3 max-w-lg text-sm leading-7 text-foreground-soft">
+              Accede a tu historial academico con tus credenciales actuales. La interfaz prioriza lectura rapida, contraste y flujo claro en escritorio y movil.
+            </p>
           </div>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
@@ -254,7 +256,9 @@ export function LoginForm() {
             </div>
 
             {error ? (
-              <p className="status-danger rounded-2xl border px-4 py-3 text-sm font-medium">{error}</p>
+              <p className="status-danger rounded-2xl border px-4 py-3 text-sm font-medium" role="alert" aria-live="assertive">
+                {error}
+              </p>
             ) : null}
 
             <button

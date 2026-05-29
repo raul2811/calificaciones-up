@@ -85,6 +85,7 @@ function SubjectColumn({
               <button
                 type="button"
                 onClick={() => onOpenPlan?.(subject)}
+                aria-label={`Abrir ${subject.code} en el plan`}
                 className="table-action mt-3 rounded-xl px-3 py-1.5 text-xs font-semibold"
               >
                 Abrir en plan
@@ -146,6 +147,7 @@ export function UnresolvedSubjectsPanel({
             key={tab.key}
             type="button"
             onClick={() => onFocusChange?.(tab.key)}
+            aria-pressed={focus === tab.key}
             className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
               focus === tab.key ? "chip-button chip-button-active" : "chip-button"
             }`}

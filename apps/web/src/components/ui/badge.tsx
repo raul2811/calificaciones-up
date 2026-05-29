@@ -30,7 +30,7 @@ export function Badge({ className, variant = "default", ...props }: BadgeProps) 
   return (
     <div
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] transition-colors",
+        "inline-flex items-center gap-1 rounded-full border px-2.5 py-[3px] text-[10px] font-semibold uppercase tracking-[0.12em] transition-all duration-200 select-none",
         variantClass(variant),
         className,
       )}

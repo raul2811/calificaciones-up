@@ -17,30 +17,30 @@ export function AvanceTable({ subjects }: AvanceTableProps) {
   return (
     <section className="table-shell overflow-hidden rounded-2xl">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-[color:var(--border)] text-sm">
-          <thead className="text-left text-xs font-semibold uppercase tracking-wide text-foreground-muted">
+        <table className="min-w-full border-separate border-spacing-0 text-sm">
+          <thead className="text-left text-[10.5px] font-semibold uppercase tracking-[0.16em] text-foreground-muted">
             <tr>
-              <th className="whitespace-nowrap px-4 py-3">Codigo</th>
-              <th className="whitespace-nowrap px-4 py-3">Nombre</th>
-              <th className="whitespace-nowrap px-4 py-3">Creditos</th>
-              <th className="whitespace-nowrap px-4 py-3">Nota</th>
-              <th className="whitespace-nowrap px-4 py-3">Estado</th>
-              <th className="whitespace-nowrap px-4 py-3">Observacion</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Codigo</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Nombre</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Creditos</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Nota</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Estado</th>
+              <th className="whitespace-nowrap border-b border-[var(--border)] px-4 py-3">Observacion</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[color:var(--border)]">
+          <tbody>
             {subjects.map((subject, index) => (
-              <tr key={`${subject.code}-${index}`} className="align-top transition hover:bg-[var(--accent-soft)]">
-                <td className="px-4 py-3 font-semibold text-primary">{subject.code || "-"}</td>
-                <td className="px-4 py-3 text-foreground-soft">{subject.name || "-"}</td>
-                <td className="px-4 py-3 text-foreground-soft">{subject.credits || "-"}</td>
-                <td className="px-4 py-3 text-foreground-soft">{subject.grade || "-"}</td>
-                <td className="px-4 py-3 text-foreground-soft">
+              <tr key={`${subject.code}-${index}`} className="align-top transition-colors hover:bg-[var(--accent-soft)]">
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 font-semibold text-primary">{subject.code || "-"}</td>
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 text-foreground-soft">{subject.name || "-"}</td>
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 text-foreground-soft">{subject.credits || "-"}</td>
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 text-foreground-soft">{subject.grade || "-"}</td>
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 text-foreground-soft">
                   <span className="status-neutral inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold">
                     {subject.status || "-"}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-foreground-soft">{subject.observation || "-"}</td>
+                <td className="border-b border-[var(--border-soft)] px-4 py-3 text-foreground-soft">{subject.observation || "-"}</td>
               </tr>
             ))}
           </tbody>

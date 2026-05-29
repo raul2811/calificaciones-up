@@ -186,6 +186,7 @@ export function PlanPage() {
               key={status}
               type="button"
               onClick={() => setStatusFilter(status)}
+              aria-pressed={normalize(statusFilter) === status}
               className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
                 normalize(statusFilter) === status ? "chip-button chip-button-active" : "chip-button"
               }`}

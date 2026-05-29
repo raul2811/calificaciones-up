@@ -79,6 +79,7 @@ function DonutChart({
               key={`${title}-${item.label}`}
               type="button"
               onClick={() => onSelect?.(item.label)}
+              aria-pressed={activeLabel === item.label}
               className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-sm transition ${
                 activeLabel === item.label ? "chip-button chip-button-active" : "chip-button"
               }`}
@@ -169,6 +170,7 @@ export function DistributionCharts({
                 key={item.year}
                 type="button"
                 onClick={() => onYearSelect?.(item.year)}
+                aria-pressed={activeYear === item.year}
                 className={`block w-full rounded-2xl p-3 text-left transition ${
                   activeYear === item.year ? "chip-button chip-button-active" : "chip-button"
                 }`}
@@ -201,6 +203,7 @@ export function DistributionCharts({
                 key={item.semester}
                 type="button"
                 onClick={() => onSemesterSelect?.(item.semester)}
+                aria-pressed={activeSemester === item.semester}
                 className={`block w-full rounded-2xl p-3 text-left transition ${
                   activeSemester === item.semester ? "chip-button chip-button-active" : "chip-button"
                 }`}

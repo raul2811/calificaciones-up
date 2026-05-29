@@ -47,6 +47,7 @@ export function ExecutiveCharts({
               key={item.label}
               type="button"
               onClick={() => onStatusClick?.(item.label)}
+              aria-pressed={activeStatus === item.label}
               className={`block w-full rounded-2xl p-3 text-left transition ${
                 activeStatus === item.label ? "chip-button chip-button-active" : "chip-button"
               }`}
@@ -72,6 +73,7 @@ export function ExecutiveCharts({
               key={item.range}
               type="button"
               onClick={() => onGradeRangeClick?.(item.range)}
+              aria-pressed={activeGradeRange === item.range}
               className={`block w-full rounded-2xl p-3 text-left transition ${
                 activeGradeRange === item.range ? "chip-button chip-button-active" : "chip-button"
               }`}

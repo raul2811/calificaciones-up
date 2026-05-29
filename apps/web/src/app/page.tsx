@@ -164,8 +164,8 @@ export const metadata: Metadata = {
 export default function HomePage() {
   return (
     <main className="min-h-screen text-slate-900">
-      <section className="border-b border-slate-200/80">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-6 lg:flex-row lg:items-center lg:justify-between">
+      <section className="sticky top-0 z-50 border-b border-slate-200/80 bg-[var(--surface-elevated)]/88 backdrop-blur-xl supports-[backdrop-filter]:bg-[var(--surface-elevated)]/80">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-8 px-6 py-5 lg:flex-row lg:items-center lg:justify-between">
           <Link href="/" className="text-sm font-semibold uppercase tracking-[0.22em] text-blue-900">
             Calificaciones UP
           </Link>

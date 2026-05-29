@@ -45,7 +45,7 @@ export function StudentHeader({ student }: StudentHeaderProps) {
             ["Ano actual", currentYear],
             ["Semestre actual", currentSemester],
           ].map(([label, value]) => (
-            <article key={label} className="surface-elevated rounded-[1.35rem] p-4">
+            <article key={label} className="surface-elevated rounded-[1.35rem] p-4 transition-transform duration-200 hover:-translate-y-0.5">
               <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">{label}</p>
               <p className="mt-3 text-lg font-semibold text-primary">{value}</p>
             </article>

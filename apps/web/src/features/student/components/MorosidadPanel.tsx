@@ -53,7 +53,7 @@ export function MorosidadPanel({ morosidad }: MorosidadPanelProps) {
       </div>
 
       <div
-        className={`mb-5 rounded-[1.45rem] border px-5 py-4 text-sm leading-7 ${
+        className={`mb-5 rounded-[1.45rem] border px-5 py-4 text-sm leading-7 shadow-sm ${
           positive
             ? "status-success"
             : warning
@@ -61,11 +61,16 @@ export function MorosidadPanel({ morosidad }: MorosidadPanelProps) {
               : "status-neutral"
         }`}
       >
-        {positive
-          ? "Estado positivo: paz y salvo activo."
-          : warning
-            ? "Atencion: se detectaron registros de deuda o saldo pendiente."
-            : "No fue posible determinar el estado financiero con certeza."}
+        <p className="text-[11px] font-semibold uppercase tracking-[0.16em] opacity-80">
+          {positive ? "Estado positivo" : warning ? "Estado con alerta" : "Estado no confirmado"}
+        </p>
+        <p className="mt-2">
+          {positive
+            ? "Paz y salvo activo."
+            : warning
+              ? "Se detectaron registros de deuda o saldo pendiente."
+              : "No fue posible determinar el estado financiero con certeza."}
+        </p>
       </div>
 
       {records.length > 0 ? (

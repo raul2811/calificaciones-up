@@ -45,7 +45,7 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
       <body>
         <Script src="/runtime-config" strategy="beforeInteractive" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

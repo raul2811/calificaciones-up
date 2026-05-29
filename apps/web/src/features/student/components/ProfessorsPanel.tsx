@@ -49,9 +49,14 @@ export function ProfessorsPanel({ professors }: ProfessorsPanelProps) {
 
   return (
     <section className="surface-panel rounded-[1.75rem] p-5 lg:p-6">
-      <div className="mb-5">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
         <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Profesores</h3>
         <p className="mt-2 text-sm leading-7 text-foreground-soft">Materias con profesor asignado, periodo academico y correo cuando aplica.</p>
+        </div>
+        <span className="count-badge rounded-full px-3 py-1 text-xs font-semibold">
+          {professors.length}
+        </span>
       </div>
 
       {professors.length === 0 ? (
@@ -83,7 +88,7 @@ export function ProfessorsPanel({ professors }: ProfessorsPanelProps) {
                 const rowKey = `professor:${code}:${name}:${period}:${index}`;
 
                 return (
-                  <TableRow key={rowKey}>
+                  <TableRow key={rowKey} className="hover:bg-[var(--accent-soft)]">
                     <TableCell className="font-semibold text-primary">{code}</TableCell>
                     <TableCell className="min-w-[220px]">{name}</TableCell>
                     <TableCell>
@@ -98,14 +103,15 @@ export function ProfessorsPanel({ professors }: ProfessorsPanelProps) {
                     </TableCell>
                     <TableCell>{email || "-"}</TableCell>
                     <TableCell>{period}</TableCell>
-                    <TableCell>
-                      <button
-                        type="button"
-                        onClick={() => handleCopyEmail(rowKey, email)}
-                        disabled={!email}
-                        className="table-action rounded-xl px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-                        {copiedKey === rowKey ? "Copiado" : "Copiar correo"}
+                      <TableCell>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyEmail(rowKey, email)}
+                          disabled={!email}
+                          aria-label={email ? `Copiar correo de ${code}` : `No hay correo para ${code}`}
+                          className="table-action rounded-xl px-3 py-1.5 text-xs font-semibold disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {copiedKey === rowKey ? "Copiado" : "Copiar correo"}
                       </button>
                     </TableCell>
                   </TableRow>

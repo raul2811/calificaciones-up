@@ -106,6 +106,7 @@ export function AnalyticsPage() {
               setActiveYear(null);
               setActiveSemester(null);
             }}
+            aria-pressed={!activeStatus && !activeGradeRange && !activeYear && !activeSemester}
             className="btn-secondary rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em]"
           >
             Limpiar filtros
@@ -113,6 +114,7 @@ export function AnalyticsPage() {
           <button
             type="button"
             onClick={() => router.push(`/plan${activeStatus ? `?status=${encodeURIComponent(activeStatus)}` : ""}`)}
+            aria-label="Abrir en plan"
             className="btn-primary rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em]"
           >
             Abrir en plan

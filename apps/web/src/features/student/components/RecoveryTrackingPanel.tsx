@@ -13,8 +13,15 @@ export function RecoveryTrackingPanel({ rows }: RecoveryTrackingPanelProps) {
 
   return (
     <section className="surface-panel rounded-[1.75rem] p-5 lg:p-6">
-      <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Seguimiento de recuperacion</h3>
-      <p className="mt-2 text-sm leading-7 text-foreground-soft">Intentos, arreglos, suficiencias, verano o notas de recuperacion cuando existan en la respuesta.</p>
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Seguimiento de recuperacion</h3>
+          <p className="mt-2 text-sm leading-7 text-foreground-soft">Intentos, arreglos, suficiencias, verano o notas de recuperacion cuando existan en la respuesta.</p>
+        </div>
+        <span className="count-badge rounded-full px-3 py-1 text-xs font-semibold">
+          {rows.length}
+        </span>
+      </div>
 
       {rows.length === 0 ? (
         <div className="empty-state mt-5 rounded-[1.35rem] p-5 text-sm text-foreground-muted">

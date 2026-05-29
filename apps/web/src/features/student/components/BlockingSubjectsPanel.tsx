@@ -12,9 +12,14 @@ type BlockingSubjectsPanelProps = {
 export function BlockingSubjectsPanel({ subjects, onSelectSubject }: BlockingSubjectsPanelProps) {
   return (
     <section className="surface-panel rounded-[1.75rem] p-5 lg:p-6">
-      <div className="mb-5">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+        <div>
         <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Materias que mas bloquean</h3>
         <p className="mt-2 text-sm leading-7 text-foreground-soft">Identifica rapidamente las materias con mayor impacto sobre el avance del plan.</p>
+        </div>
+        <span className="count-badge rounded-full px-3 py-1 text-xs font-semibold">
+          {subjects.length}
+        </span>
       </div>
       {subjects.length === 0 ? (
         <div className="empty-state rounded-[1.35rem] p-6">
@@ -44,7 +49,12 @@ export function BlockingSubjectsPanel({ subjects, onSelectSubject }: BlockingSub
                   <TableCell>{item.subject.planSemester || item.subject.semester || "-"}</TableCell>
                   <TableCell className="max-w-[340px] text-sm leading-6">{item.reason}</TableCell>
                   <TableCell>
-                    <Button type="button" variant="outline" onClick={() => onSelectSubject?.(item.subject.code, item.subject.name)}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => onSelectSubject?.(item.subject.code, item.subject.name)}
+                      aria-label={`Ver ${item.subject.code} en el plan`}
+                    >
                       Ver en plan
                     </Button>
                   </TableCell>

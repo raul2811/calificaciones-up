@@ -152,68 +152,113 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
       await logout();
       router.replace("/");
     } catch {
-      setError("No fue posible cerrar sesion.");
+      setError("No fue posible cerrar sesión.");
       setIsLoggingOut(false);
     }
   }
 
   if (isCheckingSession) {
     return (
-      <main className="min-h-screen p-4">
-        <section className="surface-hero mx-auto w-full max-w-7xl rounded-[1.75rem] p-8">
-          <p className="text-sm font-medium text-foreground-soft">Verificando sesion...</p>
+      <main className="min-h-screen p-4" role="main">
+        <section
+          className="surface-hero mx-auto w-full max-w-7xl rounded-2xl p-10"
+          aria-label="Verificando sesión"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <div className="flex items-center gap-3">
+            <div
+              className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent"
+              aria-hidden="true"
+            />
+            <p className="text-sm font-medium text-[var(--foreground-soft)]">Verificando sesión...</p>
+          </div>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1920px] grid-cols-1 gap-5 px-3 py-3 lg:grid-cols-[320px_1fr] lg:px-4 lg:py-4">
-        <aside className="shell-sidebar rounded-[1.9rem] px-5 py-5 lg:px-6 lg:py-6">
-          <div className="flex items-start gap-3">
-            <StudentPhoto name={studentName} size={64} roundedClassName="rounded-2xl" />
+    <main className="min-h-screen" role="main">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1920px] grid-cols-1 gap-4 p-3 lg:grid-cols-[300px_1fr] lg:p-4">
+
+        {/* ── Sidebar ── */}
+        <aside
+          className="shell-sidebar rounded-2xl px-5 py-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto lg:px-5 lg:py-6"
+          aria-label="Panel de navegación"
+        >
+
+          {/* Student identity */}
+          <div className="flex items-center gap-3.5">
+            <StudentPhoto name={studentName} size={56} roundedClassName="rounded-xl" />
             <div className="min-w-0 flex-1">
-              <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Estudiante</p>
-              <h2 className="mt-1 truncate text-lg font-semibold text-primary">{studentName}</h2>
-              <p className="truncate text-sm text-foreground-muted">{studentCareer}</p>
+              <p
+                className="section-kicker text-[10px] font-semibold uppercase tracking-[0.2em]"
+                aria-hidden="true"
+              >
+                Estudiante
+              </p>
+              <h2 className="mt-0.5 truncate text-[15px] font-semibold leading-snug text-[var(--foreground)]">
+                {studentName}
+              </h2>
+              <p className="truncate text-[12px] text-[var(--foreground-muted)]">{studentCareer}</p>
             </div>
           </div>
 
-          <div className="mt-5 grid grid-cols-2 gap-3 text-xs text-foreground-soft">
-            <div className="surface-elevated rounded-2xl px-3 py-3">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-foreground-muted">Plan</p>
-              <p className="mt-1 text-sm font-semibold text-primary">{studentPlan}</p>
+          {/* Stats grid */}
+          <div
+            className="mt-5 grid grid-cols-2 gap-2.5"
+            role="group"
+            aria-label="Datos académicos"
+          >
+            <div className="surface-elevated rounded-xl px-3.5 py-3">
+              <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--foreground-muted)]">Plan</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{studentPlan}</p>
             </div>
-            <div className="surface-elevated rounded-2xl px-3 py-3">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-foreground-muted">Indice</p>
-              <p className="mt-1 text-sm font-semibold text-primary">{studentIndex}</p>
+            <div className="surface-elevated rounded-xl px-3.5 py-3">
+              <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--foreground-muted)]">Índice</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{studentIndex}</p>
             </div>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-2">
+          {/* Status badges */}
+          <div
+            className="mt-3.5 flex flex-wrap gap-2"
+            role="group"
+            aria-label="Estado del estudiante"
+          >
             <div
-              className={`inline-flex rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] ${financialStatusClass(
-                morosidad?.status,
-              )}`}
+              className={`inline-flex items-center rounded-full border px-3 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em] ${financialStatusClass(morosidad?.status)}`}
+              aria-label={`Estado financiero: ${financialStatusLabel(morosidad?.status)}`}
             >
               {financialStatusLabel(morosidad?.status)}
             </div>
-            <div className="status-neutral inline-flex rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em]">
+            <div
+              className="status-neutral inline-flex items-center rounded-full border px-3 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em]"
+              aria-live="polite"
+            >
               {shellStatus}
             </div>
           </div>
 
-          <nav className="mt-6 grid grid-cols-2 gap-2.5 text-sm lg:grid-cols-1">
+          {/* Navigation */}
+          <nav
+            className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-1"
+            aria-label="Navegación principal"
+          >
             {NAV_ITEMS.map((item) => {
               const active = pathname === item.href;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-2xl px-3.5 py-3 font-medium transition-all duration-200 ${
-                    active ? "nav-link nav-link-active" : "nav-link"
-                  }`}
+                  aria-current={active ? "page" : undefined}
+                  className={[
+                    "rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium",
+                    "transition-all duration-200 focus-visible:outline-none",
+                    "focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                    active ? "nav-link nav-link-active" : "nav-link",
+                  ].join(" ")}
                 >
                   {item.label}
                 </Link>
@@ -221,51 +266,74 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
             })}
           </nav>
 
-          <div className="mt-6 grid gap-2">
+          {/* Actions */}
+          <div className="mt-5 grid gap-2">
             <button
               type="button"
               onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
-              className="btn-secondary rounded-2xl px-3.5 py-3 text-sm font-semibold"
+              aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+              aria-pressed={theme === "dark"}
+              className="btn-secondary rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
             >
-              {theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+              {theme === "dark" ? "Modo claro" : "Modo oscuro"}
             </button>
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              className="btn-primary rounded-2xl px-3.5 py-3 text-sm font-semibold disabled:opacity-60"
+              aria-busy={isLoggingOut}
+              className="btn-primary rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
             >
-              {isLoggingOut ? "Cerrando..." : "Cerrar sesion"}
+              {isLoggingOut ? "Cerrando..." : "Cerrar sesión"}
             </button>
           </div>
         </aside>
 
-        <section className="shell-main rounded-[1.9rem] px-4 py-5 sm:px-6 xl:px-8 2xl:px-10">
-          <header className="divider-default mb-6 border-b pb-5">
+        {/* ── Main content ── */}
+        <section
+          className="shell-main rounded-2xl px-5 py-6 sm:px-7 xl:px-9"
+          aria-label="Contenido principal"
+        >
+          <header className="divider-default mb-7 border-b pb-6">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
-                <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.2em]">
-                  Plataforma academica
+                <p
+                  className="section-kicker text-[10px] font-semibold uppercase tracking-[0.22em]"
+                  aria-hidden="true"
+                >
+                  Plataforma académica
                 </p>
-                <h1 className="mt-2 text-2xl font-semibold tracking-tight text-primary">{env.appName}</h1>
-                <p className="mt-2 max-w-2xl text-sm leading-7 text-foreground-soft">
-                  Visualizacion academica clara para consultar expediente, avance, analytics, recovery y datos clave del estudiante.
+                <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+                  {env.appName}
+                </h1>
+                <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-[var(--foreground-soft)]">
+                  Visualización académica clara para consultar expediente, avance, analytics, recovery y datos clave del estudiante.
                 </p>
               </div>
-              <div className="surface-elevated rounded-2xl px-4 py-3 text-right">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground-muted">Estado actual</p>
-                <p className="mt-1 text-sm font-semibold text-primary">{shellStatus}</p>
+              <div
+                className="surface-elevated rounded-xl px-4 py-3 text-right"
+                aria-live="polite"
+                aria-label={`Estado actual: ${shellStatus}`}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
+                  Estado actual
+                </p>
+                <p className="mt-1 text-[13px] font-semibold text-[var(--foreground)]">{shellStatus}</p>
               </div>
             </div>
           </header>
 
           {error ? (
-            <p className="status-danger mb-5 rounded-2xl border px-4 py-3 text-sm font-medium">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="status-danger mb-6 rounded-xl border px-4 py-3 text-[13px] font-medium"
+            >
               {error}
-            </p>
+            </div>
           ) : null}
 
-          <div className="space-y-6">{children}</div>
+          <div className="space-y-5">{children}</div>
         </section>
       </div>
     </main>

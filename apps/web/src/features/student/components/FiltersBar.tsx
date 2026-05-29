@@ -57,7 +57,7 @@ export function FiltersBar({
         <button
           type="button"
           onClick={onClearFilters}
-          className="btn-secondary h-11 rounded-xl px-4 text-sm font-semibold"
+          className="btn-secondary h-11 rounded-xl px-4 text-sm font-semibold md:self-end"
         >
           Limpiar filtros
         </button>
