@@ -3,7 +3,10 @@
 ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
 ![Rust](https://img.shields.io/badge/Rust-Axum-dea584?style=for-the-badge&logo=rust)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ed?style=for-the-badge&logo=docker)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326ce5?style=for-the-badge&logo=kubernetes)
 ![License](https://img.shields.io/badge/License-AGPL--3.0-orange?style=for-the-badge)
+
+**Cloudnative ready** y desplegado en Kubernetes con Argo CD, Envoy Gateway y observabilidad en Grafana/Prometheus.
 
 **Calificaciones UP** es una plataforma web moderna diseñada para transformar la experiencia de consulta academica de los estudiantes de la **Universidad de Panama**. Actua como una capa de presentacion optimizada sobre la Secretaria Virtual oficial, ofreciendo una interfaz clara, rapida y navegable.
 
@@ -106,6 +109,15 @@ URLs locales:
 - frontend: `http://localhost:3000`
 - backend: `http://localhost:8081`
 
+### Estado Cloud-Native
+
+El despliegue de produccion ya esta preparado para Kubernetes:
+
+- Argo CD gestiona el despliegue del stack.
+- Envoy Gateway expone el frontend y el backend.
+- Prometheus recolecta metricas del API via `ServiceMonitor`.
+- Grafana incluye un dashboard especifico de `calificaciones-up`.
+
 ### Comandos utiles
 
 ```bash
@@ -197,6 +209,8 @@ La base de Kubernetes esta en:
 
 - `deploy/kubernetes/README.md`
 - `deploy/kubernetes/base/`
+
+En el cluster `lab-citic`, el stack vive bajo `clusters/lab-citic/platform/calificaciones-up/` y se sincroniza con Argo CD desde `clusters/lab-citic/argocd/applications/calificaciones-up.yaml`.
 
 ### Variables minimas en Kubernetes
 

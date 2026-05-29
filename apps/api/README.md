@@ -2,6 +2,12 @@
 
 Backend HTTP con Axum para `calificaciones-up`.
 
+Estado:
+
+- Kubernetes ready
+- expone `/metrics` para Prometheus
+- integra login remoto contra Matricula UP
+
 ## Ejecutar
 
 ```bash
