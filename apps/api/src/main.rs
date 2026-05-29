@@ -5,8 +5,8 @@ mod infrastructure;
 
 use std::sync::Arc;
 
-use application::AppState;
 use application::session_repository::SessionRepository;
+use application::AppState;
 use dotenvy::dotenv;
 use infrastructure::{
     avance_parser::ScraperAcademicProgressParser, config::Config,

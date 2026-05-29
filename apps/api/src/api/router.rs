@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
 use axum::{
-    middleware,
     http::{header, HeaderValue, Method},
+    middleware,
     routing::{get, post},
     Router,
 };
@@ -12,8 +12,8 @@ use crate::application::academic_progress_parser::AcademicProgressParser;
 use crate::application::morosidad_parser::MorosidadParser;
 use crate::application::notes_credits_parser::NotesCreditsParser;
 use crate::application::professors_parser::ProfessorsParser;
-use crate::{application::AppState, infrastructure::config::Config};
 use crate::infrastructure::metrics;
+use crate::{application::AppState, infrastructure::config::Config};
 
 use super::{handlers, state::ApiState};
 

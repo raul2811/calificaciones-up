@@ -13,8 +13,8 @@ use crate::application::remote_login_client::{
     RemoteFetchError, RemoteLoginClient, RemoteLoginClientError, RemoteLoginCookies,
     RemoteLoginOutcome, RemotePhotoFetchError, RemotePhotoPayload,
 };
-use crate::infrastructure::metrics;
 use crate::domain::{credentials::RemoteLoginCredentials, session::InternalSession};
+use crate::infrastructure::metrics;
 use async_trait::async_trait;
 
 const LOGIN_PATH: &str = "/sevup/acceso/index.html";
