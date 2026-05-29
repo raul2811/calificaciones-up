@@ -8,6 +8,14 @@ Estado:
 - expone `/metrics` para Prometheus
 - integra login remoto contra Matricula UP
 
+## Operacion Rapida
+
+- Health: `GET /health`
+- Ready: `GET /ready`
+- Metrics: `GET /metrics`
+- CORS: responde al origen definido en `FRONTEND_ORIGIN`
+- Sesiones: se guardan en memoria, asi que el API debe quedarse en 1 replica
+
 ## Ejecutar
 
 ```bash
