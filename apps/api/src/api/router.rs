@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
+    middleware,
     http::{header, HeaderValue, Method},
     routing::{get, post},
     Router,
@@ -12,6 +13,7 @@ use crate::application::morosidad_parser::MorosidadParser;
 use crate::application::notes_credits_parser::NotesCreditsParser;
 use crate::application::professors_parser::ProfessorsParser;
 use crate::{application::AppState, infrastructure::config::Config};
+use crate::infrastructure::metrics;
 
 use super::{handlers, state::ApiState};
 
@@ -44,6 +46,7 @@ pub fn build_router(
     );
 
     Router::new()
+        .route("/metrics", get(handlers::metrics))
         .route("/health", get(handlers::health))
         .route("/ready", get(handlers::ready))
         .route("/auth/login", post(handlers::auth_login))
@@ -52,6 +55,7 @@ pub fn build_router(
         .route("/student/avance", get(handlers::student_avance))
         .route("/student/photo", get(handlers::student_photo))
         .with_state(state)
+        .layer(middleware::from_fn(metrics::record_http_metrics))
         .layer(TraceLayer::new_for_http())
         .layer(cors)
 }

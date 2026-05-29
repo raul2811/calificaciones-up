@@ -20,6 +20,7 @@ use crate::{
     },
     domain::error::AppError,
     domain::session::SessionId,
+    infrastructure::metrics,
 };
 
 const APP_SESSION_COOKIE_NAME: &str = "app_session";
@@ -66,6 +67,22 @@ pub async fn ready(
     Ok(Json(readiness))
 }
 
+pub async fn metrics() -> Response {
+    match metrics::render_metrics() {
+        Ok(body) => (
+            StatusCode::OK,
+            [(header::CONTENT_TYPE, metrics::metrics_content_type())],
+            body,
+        )
+            .into_response(),
+        Err(error) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            format!("failed to render metrics: {error}"),
+        )
+            .into_response(),
+    }
+}
+
 pub async fn auth_login(
     State(state): State<ApiState>,
     jar: CookieJar,
@@ -84,7 +101,24 @@ pub async fn auth_login(
         password: payload.password,
     };
 
-    let result = use_case.execute(command).await.map_err(map_login_error)?;
+    let result = match use_case.execute(command).await {
+        Ok(result) => {
+            metrics::set_active_sessions(
+                state
+                    .app_state
+                    .session_repository
+                    .count()
+                    .await
+                    .map_err(|_| AppError::Internal("Failed to count sessions.".to_string()))?,
+            );
+            metrics::record_login_attempt("success");
+            result
+        }
+        Err(error) => {
+            metrics::record_login_attempt(login_outcome_label(&error));
+            return Err(map_login_error(error));
+        }
+    };
 
     let cookie = Cookie::build((APP_SESSION_COOKIE_NAME, result.session_id.clone()))
         .path("/")
@@ -130,6 +164,14 @@ pub async fn auth_session(
             .delete(&parsed_id)
             .await
             .map_err(|_| AppError::Internal("Failed to remove session.".to_string()))?;
+        metrics::set_active_sessions(
+            state
+                .app_state
+                .session_repository
+                .count()
+                .await
+                .map_err(|_| AppError::Internal("Failed to count sessions.".to_string()))?,
+        );
 
         return Err(AppError::Unauthorized("No autenticado.".to_string()));
     }
@@ -160,6 +202,14 @@ pub async fn auth_logout(
                 .delete(&session_id)
                 .await
                 .map_err(|_| AppError::Internal("Failed to invalidate session.".to_string()))?;
+            metrics::set_active_sessions(
+                state
+                    .app_state
+                    .session_repository
+                    .count()
+                    .await
+                    .map_err(|_| AppError::Internal("Failed to count sessions.".to_string()))?,
+            );
         }
 
         let mut removal_cookie = Cookie::from(APP_SESSION_COOKIE_NAME);
@@ -238,6 +288,15 @@ fn map_login_error(error: LoginUseCaseError) -> AppError {
         LoginUseCaseError::SessionStore(_) => {
             AppError::Internal("No fue posible crear sesion interna.".to_string())
         }
+    }
+}
+
+fn login_outcome_label(error: &LoginUseCaseError) -> &'static str {
+    match error {
+        LoginUseCaseError::InvalidInput(_) => "invalid_input",
+        LoginUseCaseError::InvalidCredentials => "invalid_credentials",
+        LoginUseCaseError::RemoteClient(_) => "remote_error",
+        LoginUseCaseError::SessionStore(_) => "session_store_error",
     }
 }
 

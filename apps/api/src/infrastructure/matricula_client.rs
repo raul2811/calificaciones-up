@@ -1,7 +1,7 @@
 #![allow(dead_code)]
 
 use std::fmt::{Display, Formatter};
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 use reqwest::{
     header::{HeaderMap, ACCEPT, CONTENT_TYPE, LOCATION, ORIGIN, REFERER, SET_COOKIE, USER_AGENT},
@@ -13,6 +13,7 @@ use crate::application::remote_login_client::{
     RemoteFetchError, RemoteLoginClient, RemoteLoginClientError, RemoteLoginCookies,
     RemoteLoginOutcome, RemotePhotoFetchError, RemotePhotoPayload,
 };
+use crate::infrastructure::metrics;
 use crate::domain::{credentials::RemoteLoginCredentials, session::InternalSession};
 use async_trait::async_trait;
 
@@ -110,6 +111,7 @@ impl MatriculaUpClient {
         &self,
         credentials: &RemoteLoginCredentials,
     ) -> Result<RemoteLoginResult, MatriculaClientError> {
+        let started_at = Instant::now();
         let login_url = self
             .base_url
             .join(LOGIN_PATH)
@@ -143,13 +145,16 @@ impl MatriculaUpClient {
 
         if is_login_success(response.status(), location.as_deref()) {
             let cookies = extract_remote_cookies(response.headers());
+            metrics::record_remote_login_attempt("authenticated", started_at.elapsed());
             return Ok(RemoteLoginResult::Authenticated(cookies));
         }
 
         if response.status() == StatusCode::OK {
+            metrics::record_remote_login_attempt("invalid_credentials", started_at.elapsed());
             return Ok(RemoteLoginResult::InvalidCredentials);
         }
 
+        metrics::record_remote_login_attempt("unexpected_response", started_at.elapsed());
         Ok(RemoteLoginResult::UnexpectedResponse {
             status_code: response.status().as_u16(),
             location,

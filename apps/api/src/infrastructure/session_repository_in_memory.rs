@@ -31,6 +31,10 @@ impl SessionRepository for InMemorySessionRepository {
         Ok(())
     }
 
+    async fn count(&self) -> Result<usize, SessionRepositoryError> {
+        Ok(self.sessions.read().await.len())
+    }
+
     async fn find_by_session_id(
         &self,
         session_id: &SessionId,

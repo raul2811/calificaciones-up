@@ -11,6 +11,11 @@ pub struct SessionRepositoryError;
 pub trait SessionRepository: Send + Sync {
     async fn save(&self, session: InternalSession) -> Result<(), SessionRepositoryError>;
 
+    async fn count(&self) -> Result<usize, SessionRepositoryError> {
+        let _ = self;
+        Ok(0)
+    }
+
     async fn find_by_session_id(
         &self,
         session_id: &SessionId,
