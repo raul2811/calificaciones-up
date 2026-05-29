@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 
 type Primitive = string | number | boolean;
 type QueryValue = Primitive | null | undefined;
@@ -24,7 +24,7 @@ export class ApiClientError extends Error {
 }
 
 function buildUrl(path: string, query?: Record<string, QueryValue>): string {
-  const base = env.apiBaseUrl.replace(/\/$/, "");
+  const base = getEnv().apiBaseUrl.replace(/\/$/, "");
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
   const url = new URL(`${base}${normalizedPath}`);
 

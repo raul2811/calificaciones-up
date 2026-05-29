@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getSession, logout } from "@/features/auth/api";
 import { StudentPhoto } from "@/features/student/components/StudentPhoto";
 import { useStudentData } from "@/features/student/context/StudentDataContext";
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 
 type AuthenticatedShellClientProps = {
   children: React.ReactNode;
@@ -64,6 +64,7 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
   const router = useRouter();
   const pathname = usePathname();
   const { state, student, morosidad } = useStudentData();
+  const env = getEnv();
 
   const [isCheckingSession, setIsCheckingSession] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);

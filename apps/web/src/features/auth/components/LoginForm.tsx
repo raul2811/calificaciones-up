@@ -15,7 +15,7 @@ import { Select } from "@/components/ui/select";
 import { login } from "@/features/auth/api";
 import type { AuthRequest, ClaseCode, ProvinciaCode } from "@/features/auth/types";
 import { ApiClientError } from "@/lib/api/client";
-import { env } from "@/lib/env";
+import { getEnv } from "@/lib/env";
 import Link from "next/link";
 
 type FormState = {
@@ -70,6 +70,7 @@ function getErrorMessage(error: unknown): string {
 
 export function LoginForm() {
   const router = useRouter();
+  const env = getEnv();
 
   const [form, setForm] = useState<FormState>({
     provincia: PROVINCIA_OPTIONS[0],
