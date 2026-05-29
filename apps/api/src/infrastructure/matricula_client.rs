@@ -83,8 +83,8 @@ impl MatriculaUpClient {
 
         let http = reqwest::Client::builder()
             .redirect(Policy::none())
-            .timeout(Duration::from_secs(20))
-            .connect_timeout(Duration::from_secs(10))
+            .timeout(Duration::from_secs(10))
+            .connect_timeout(Duration::from_secs(5))
             .build()
             .map_err(MatriculaClientError::RequestFailed)?;
 
