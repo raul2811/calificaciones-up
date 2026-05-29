@@ -230,31 +230,32 @@ export function AnalyticsPage() {
       {/* Panel Analítico Principal */}
       <div className="surface-panel rounded-[2rem] border border-[var(--border)] shadow-xl overflow-hidden animate-fade-in-up delay-300">
         {/* Header Tabs Premium */}
-        <div className="p-2 bg-[var(--surface-muted)]/80 border-b border-[var(--border-soft)] backdrop-blur-md flex flex-wrap gap-2">
-          {([
-          { id: "indice", label: "Evolución de Índice" },
-          { id: "distribucion", label: "Distribución de Notas" },
-          { id: "progreso", label: "Esfuerzo por Semestre" },
-            ] as const).map((tab) => {
+<div className="p-2 bg-[var(--surface-muted)]/80 border-b border-[var(--border-soft)] backdrop-blur-md flex flex-wrap gap-2">
+  {([
+    { id: "indice", label: "Evolución de Índice" },
+    { id: "distribucion", label: "Distribución de Notas" },
+    { id: "progreso", label: "Esfuerzo por Semestre" },
+  ] as const).map((tab) => {
+    const isActive = activeTab === tab.id;
 
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 min-w-[140px] py-3 px-4 text-center text-sm font-bold rounded-[1.2rem] transition-all duration-300 outline-none ${
-                  isActive
-                    ? "text-white shadow-lg shadow-[var(--accent-glow)]"
-                    : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)]"
-                }`}
-              >
-                {isActive && (
-                  <div className="absolute inset-0 rounded-[1.2rem] bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] -z-10" />
-                )}
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
+    return (
+      <button
+        key={tab.id}
+        onClick={() => setActiveTab(tab.id)}
+        className={`relative flex-1 min-w-[140px] py-3 px-4 text-center text-sm font-bold rounded-[1.2rem] transition-all duration-300 outline-none ${
+          isActive
+            ? "text-white shadow-lg shadow-[var(--accent-glow)]"
+            : "text-[var(--foreground-muted)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)]"
+        }`}
+      >
+        {isActive && (
+          <div className="absolute inset-0 rounded-[1.2rem] bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] -z-10" />
+        )}
+        {tab.label}
+      </button>
+    );
+  })}
+</div>
 
         <div className="p-6 md:p-8 min-h-[400px]">
           {/* VISTA 1: Recharts AreaChart */}
