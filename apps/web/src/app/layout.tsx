@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "@/styles/globals.css";
 import { siteConfig } from "@/lib/site";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -44,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <Script src="/runtime-config" strategy="beforeInteractive" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {children}
       </body>

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getCanonicalUrl, siteConfig } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 const moduleCards = [
   {
     name: "Dashboard",

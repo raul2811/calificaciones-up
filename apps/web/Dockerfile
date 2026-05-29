@@ -18,14 +18,6 @@ WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-ARG NEXT_PUBLIC_API_BASE_URL=http://localhost:8081
-ARG NEXT_PUBLIC_APP_NAME="Calificaciones UP"
-ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
-ENV NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
-ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
 COPY --from=deps /app/bun.lock ./bun.lock

@@ -22,13 +22,6 @@ const PROFESORES_PATH: &str = "/sevup/informe/cargarProfesor.html";
 const MOROSIDAD_PATH: &str = "/sevup/informe/morosidad.html";
 const PHOTO_PATH: &str = "/sevup/usuario/muestraImagenUsuarioByByte.html";
 const LOGIN_SUCCESS_LOCATION: &str = "../usuario/inicio.html";
-const LOGIN_ORIGIN: &str = "https://matricula.up.ac.pa";
-const LOGIN_REFERER: &str = "https://matricula.up.ac.pa/sevup/";
-const AVANCE_REFERER: &str = "https://matricula.up.ac.pa/sevup/usuario/inicio.html";
-const NOTAS_REFERER: &str = "https://matricula.up.ac.pa/sevup/usuario/inicio.html";
-const PROFESORES_REFERER: &str = "https://matricula.up.ac.pa/sevup/usuario/inicio.html";
-const MOROSIDAD_REFERER: &str = "https://matricula.up.ac.pa/sevup/usuario/inicio.html";
-const PHOTO_REFERER: &str = "https://matricula.up.ac.pa/sevup/usuario/inicio.html";
 const REMOTE_LOGIN_LOCATION_HINT: &str = "/sevup/acceso/";
 const ACCEPT_HEADER: &str = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7";
 
@@ -99,6 +92,17 @@ impl MatriculaUpClient {
         })
     }
 
+    fn origin_header(&self) -> String {
+        self.base_url.origin().ascii_serialization()
+    }
+
+    fn referer_url(&self, path: &str) -> Result<String, MatriculaClientError> {
+        self.base_url
+            .join(path)
+            .map(|url| url.to_string())
+            .map_err(|_| MatriculaClientError::InvalidBaseUrl)
+    }
+
     pub async fn login(
         &self,
         credentials: &RemoteLoginCredentials,
@@ -107,14 +111,15 @@ impl MatriculaUpClient {
             .base_url
             .join(LOGIN_PATH)
             .map_err(|_| MatriculaClientError::InvalidBaseUrl)?;
+        let login_referer = self.referer_url("/sevup/")?;
 
         let response = self
             .http
             .post(login_url)
             .header(USER_AGENT, self.user_agent.as_str())
             .header(ACCEPT, ACCEPT_HEADER)
-            .header(ORIGIN, LOGIN_ORIGIN)
-            .header(REFERER, LOGIN_REFERER)
+            .header(ORIGIN, self.origin_header())
+            .header(REFERER, login_referer)
             .header(CONTENT_TYPE, "application/x-www-form-urlencoded")
             .form(&[
                 ("provincia", credentials.provincia.as_str()),
@@ -152,7 +157,7 @@ impl MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(AVANCE_PATH, AVANCE_REFERER, session)
+        self.fetch_authenticated_html(AVANCE_PATH, "/sevup/usuario/inicio.html", session)
             .await
     }
 
@@ -160,7 +165,7 @@ impl MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(NOTAS_PATH, NOTAS_REFERER, session)
+        self.fetch_authenticated_html(NOTAS_PATH, "/sevup/usuario/inicio.html", session)
             .await
     }
 
@@ -168,7 +173,7 @@ impl MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(PROFESORES_PATH, PROFESORES_REFERER, session)
+        self.fetch_authenticated_html(PROFESORES_PATH, "/sevup/usuario/inicio.html", session)
             .await
     }
 
@@ -176,7 +181,7 @@ impl MatriculaUpClient {
         &self,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
-        self.fetch_authenticated_html(MOROSIDAD_PATH, MOROSIDAD_REFERER, session)
+        self.fetch_authenticated_html(MOROSIDAD_PATH, "/sevup/usuario/inicio.html", session)
             .await
     }
 
@@ -196,7 +201,7 @@ impl MatriculaUpClient {
             .http
             .get(url)
             .header(USER_AGENT, self.user_agent.as_str())
-            .header(REFERER, PHOTO_REFERER)
+            .header(REFERER, self.referer_url("/sevup/usuario/inicio.html")?)
             .header(ACCEPT, ACCEPT_HEADER)
             .header(reqwest::header::COOKIE, cookie_header)
             .send()
@@ -252,7 +257,7 @@ impl MatriculaUpClient {
     async fn fetch_authenticated_html(
         &self,
         path: &str,
-        referer: &str,
+        referer_path: &str,
         session: &InternalSession,
     ) -> Result<String, MatriculaClientError> {
         let cookie_header = build_remote_cookie_header(session)
@@ -262,6 +267,7 @@ impl MatriculaUpClient {
             .base_url
             .join(path)
             .map_err(|_| MatriculaClientError::InvalidBaseUrl)?;
+        let referer = self.referer_url(referer_path)?;
 
         let response = self
             .http

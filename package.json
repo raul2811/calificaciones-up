@@ -10,7 +10,7 @@
     "check:api": "cargo check --manifest-path apps/api/Cargo.toml",
     "docker:build:web": "docker build -f apps/web/Dockerfile -t calificaciones-up-web .",
     "docker:build:api": "docker build -t calificaciones-up-api apps/api",
-    "docker:up": "docker compose up --build",
+    "docker:up": "docker compose up",
     "docker:down": "docker compose down"
   },
   "workspaces": [

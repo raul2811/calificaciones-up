@@ -20,7 +20,13 @@ use tracing::{info, warn};
 async fn main() {
     let _ = dotenv();
 
-    let config = Arc::new(Config::from_env());
+    let config = match Config::from_env() {
+        Ok(config) => Arc::new(config),
+        Err(error) => {
+            eprintln!("{}", error);
+            std::process::exit(1);
+        }
+    };
     init_tracing(&config.log_level);
 
     let remote_login_client = Arc::new(

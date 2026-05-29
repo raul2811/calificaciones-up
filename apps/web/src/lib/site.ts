@@ -1,12 +1,10 @@
-const DEFAULT_SITE_URL = "http://localhost:3000";
-
-function normalizeSiteUrl(value?: string): string {
-  const raw = value?.trim() || DEFAULT_SITE_URL;
+function requireSiteUrl(value: string | undefined): string {
+  const raw = value?.trim() || "https://example.invalid";
 
   try {
     return new URL(raw).toString().replace(/\/$/, "");
   } catch {
-    return DEFAULT_SITE_URL;
+    return "https://example.invalid";
   }
 }
 
@@ -14,7 +12,7 @@ export const siteConfig = {
   name: "Calificaciones UP",
   description:
     "Plataforma academica para consultar calificaciones, avance academico, profesores y resumen del expediente academico relacionado con la Secretaria Virtual de la Universidad de Panama.",
-  siteUrl: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
+  siteUrl: requireSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
 };
 
 export function getCanonicalUrl(path = "/"): string {

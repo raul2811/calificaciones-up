@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 
 import { getCanonicalUrl } from "@/lib/site";
 
+export const dynamic = "force-dynamic";
+
 const routes = ["/", "/login", "/dashboard", "/plan", "/analytics", "/pendientes", "/profesores", "/morosidad"];
 
 export default function sitemap(): MetadataRoute.Sitemap {

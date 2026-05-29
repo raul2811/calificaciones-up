@@ -42,14 +42,13 @@ El proyecto esta construido bajo una arquitectura de **monorepo**, separando res
 calificaciones-up/
 ├── apps/
 │   ├── web/                # Next.js App Router
-│   │   ├── Dockerfile
-│   │   └── railway.toml
+│   │   └── Dockerfile
 │   └── api/                # Rust + Axum
-│       ├── Dockerfile
-│       └── railway.toml
+│       └── Dockerfile
+├── deploy/
+│   └── kubernetes/
+│       └── base/
 ├── docs/
-│   └── deployment/
-│       └── railway.md
 └── compose.yaml
 ```
 
@@ -74,14 +73,13 @@ El sistema emplea scraping seguro y controlado, limitado exclusivamente a la lec
 
 ### Estructura de despliegue
 
-El repositorio esta organizado por servicio para facilitar despliegues en plataformas como Railway:
+El repositorio esta organizado por servicio para facilitar despliegues en Docker y Kubernetes:
 
 - `apps/web/Dockerfile`
-- `apps/web/railway.toml`
 - `apps/api/Dockerfile`
-- `apps/api/railway.toml`
+- `deploy/kubernetes/README.md`
+- `deploy/kubernetes/base/`
 - `compose.yaml`
-- `docs/deployment/railway.md`
 
 ### Configuracion Local
 
@@ -126,7 +124,7 @@ La forma mas simple de poner el sistema en marcha es usando Docker Compose:
 
 ```bash
 cp .env.compose.example .env
-docker compose up --build
+docker compose up
 ```
 
 Servicios expuestos por defecto:
@@ -167,7 +165,7 @@ Variables relevantes:
 - `MATRICULA_USER_AGENT`
 
 Importante:
-el backend soporta `PORT` para plataformas que asignan puertos dinamicos, como Railway. Si `API_ADDR` no esta definido, la app usa `PORT` y hace bind en `0.0.0.0`.
+el backend soporta `PORT` para plataformas que asignan puertos dinamicos. Si `API_ADDR` no esta definido, la app usa `PORT` y hace bind en `0.0.0.0`.
 
 ### Build manual por imagen
 
@@ -193,27 +191,14 @@ docker run --rm -p 8081:8081 \
   calificaciones-up-api
 ```
 
-## Despliegue en Railway
+## Despliegue en Kubernetes
 
-El monorepo ya incluye config por servicio para Railway:
+La base de Kubernetes esta en:
 
-- `apps/web/railway.toml`
-- `apps/api/railway.toml`
+- `deploy/kubernetes/README.md`
+- `deploy/kubernetes/base/`
 
-Resumen recomendado:
-
-1. Crea un servicio `web` apuntando a este repo.
-2. En `web`, usa `Root Directory: /` y `Config as Code Path: /apps/web/railway.toml`.
-3. Crea un servicio `api` apuntando a este repo.
-4. En `api`, usa `Root Directory: /apps/api` y `Config as Code Path: /apps/api/railway.toml`.
-5. Configura `NEXT_PUBLIC_API_BASE_URL` en `web` con la URL publica de `api`.
-6. Configura `FRONTEND_ORIGIN` en `api` con la URL publica de `web`.
-
-Guia paso a paso:
-
-- `docs/deployment/railway.md`
-
-### Variables minimas en Railway
+### Variables minimas en Kubernetes
 
 `web`:
 
@@ -224,30 +209,16 @@ Guia paso a paso:
 `api`:
 
 - `FRONTEND_ORIGIN`
-- `MATRICULA_BASE_URL` opcional
+- `MATRICULA_BASE_URL`
 - `MATRICULA_USER_AGENT` opcional
 - `RUST_LOG` opcional
 
-## Despliegue en servidor
+### Flujo recomendado
 
-Recomendaciones practicas:
-
-1. Publica `web` detras de HTTPS con un dominio propio o reverse proxy.
-2. Publica `api` detras del mismo dominio o en un subdominio dedicado.
-3. Construye el frontend con `NEXT_PUBLIC_API_BASE_URL` apuntando a la URL publica real del backend.
-4. Configura `FRONTEND_ORIGIN` en el backend con la URL publica real del frontend para CORS.
-5. Usa `GET /health` y `GET /ready` para probes de plataforma.
-
-Ejemplo:
-
-- frontend: `https://calificaciones.tu-dominio.com`
-- backend: `https://api.calificaciones.tu-dominio.com`
-
-Entonces:
-
-- `NEXT_PUBLIC_API_BASE_URL=https://api.calificaciones.tu-dominio.com`
-- `NEXT_PUBLIC_SITE_URL=https://calificaciones.tu-dominio.com`
-- `FRONTEND_ORIGIN=https://calificaciones.tu-dominio.com`
+1. Ajusta los dominios publicos en `deploy/kubernetes/base/configmap.yaml`.
+2. Despliega `api` primero y valida `GET /health` y `GET /ready`.
+3. Despliega `web` y confirma que `/runtime-config` responde con las URLs correctas.
+4. Mantén `api` en una sola replica hasta mover las sesiones a un almacén compartido.
 
 ## CI/CD y DevOps
 
