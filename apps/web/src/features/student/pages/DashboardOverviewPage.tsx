@@ -70,27 +70,28 @@ export function DashboardOverviewPage() {
     <div className="space-y-6">
       <StudentHeader student={student} />
 
-      <section className="surface-hero rounded-[1.75rem] p-5 lg:p-6">
-        <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Estado financiero</p>
-        <div className="mt-4 flex flex-wrap items-end justify-between gap-4">
+      <section className="relative overflow-hidden surface-hero rounded-[2rem] p-6 lg:p-8 animate-fade-in-up border border-[var(--border-strong)] shadow-xl">
+        <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[radial-gradient(circle_at_center,_var(--accent-glow)_0%,_transparent_70%)] opacity-40 pointer-events-none" />
+        <p className="relative z-10 section-kicker text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--accent)] mb-2">Estado Financiero</p>
+        <div className="relative z-10 mt-4 flex flex-wrap items-end justify-between gap-6">
           <div>
-            <p className="text-2xl font-semibold tracking-tight text-primary">
+            <p className="text-3xl font-black tracking-tight text-[var(--foreground)]">
               {morosidad?.status === "paz_y_salvo"
                 ? "Paz y salvo"
                 : morosidad?.status === "moroso"
                   ? "Moroso"
                   : "Estado no disponible"}
             </p>
-            <p className="mt-2 text-sm leading-7 text-foreground-soft">
-              Ano/Semestre: {morosidad?.year || "-"}/{morosidad?.currentSemesterOrCycle || "-"}
+            <p className="mt-2 text-[13px] font-medium leading-7 text-[var(--foreground-soft)]">
+              Año/Semestre: {morosidad?.year || "-"}/{morosidad?.currentSemesterOrCycle || "-"}
             </p>
           </div>
-          <div className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${
+          <div className={`rounded-full border px-4 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] shadow-sm backdrop-blur-md ${
             morosidad?.status === "paz_y_salvo"
-              ? "status-success"
+              ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
               : morosidad?.status === "moroso"
-                ? "status-danger"
-                : "status-neutral"
+                ? "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                : "bg-[var(--surface-muted)] text-[var(--foreground-muted)] border-[var(--border)]"
           }`}>
             {morosidad?.status === "paz_y_salvo"
               ? "Sin alertas"

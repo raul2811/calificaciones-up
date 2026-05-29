@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Outfit } from "next/font/google";
 import "@/styles/globals.css";
 import { siteConfig } from "@/lib/site";
+
+const outfit = Outfit({
+  subsets: ["latin"],
+  variable: "--font-outfit",
+});
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +51,7 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es" suppressHydrationWarning className={outfit.variable}>
       <body>
         <Script src="/runtime-config" strategy="beforeInteractive" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

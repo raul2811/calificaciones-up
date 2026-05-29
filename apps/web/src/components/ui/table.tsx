@@ -46,8 +46,8 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttr
   <th
     ref={ref}
     className={cn(
-      "h-11 whitespace-nowrap border-b border-[var(--border)] px-4 text-left align-middle",
-      "text-[10.5px] font-semibold uppercase tracking-[0.16em]",
+      "h-12 whitespace-nowrap border-b border-[var(--border-strong)] px-4 text-left align-middle",
+      "text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)]",
       "first:pl-5 last:pr-5",
       className,
     )}

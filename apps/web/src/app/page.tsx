@@ -231,7 +231,7 @@ export default function HomePage() {
       </header>
 
       <section className={`${sectionClass} grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center lg:py-24`}>
-        <div className="relative">
+        <div className="relative animate-fade-in-up">
           <div className="absolute -left-10 -top-10 -z-10 h-40 w-40 rounded-full bg-[var(--accent-glow)] blur-3xl" />
           <p className={eyebrowClass}>Plataforma académica para estudiantes</p>
 
@@ -267,7 +267,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        <aside aria-label="Vista previa del dashboard académico" className="dashboard-preview relative overflow-hidden rounded-[2rem] p-5 text-slate-50">
+        <aside aria-label="Vista previa del dashboard académico" className="dashboard-preview relative overflow-hidden rounded-[2rem] p-5 text-slate-50 animate-fade-in-up delay-100">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.46),_transparent_38%),radial-gradient(circle_at_bottom_right,_rgba(14,165,233,0.28),_transparent_35%)]" />
           <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -300,7 +300,7 @@ export default function HomePage() {
         </aside>
       </section>
 
-      <section id="que-es" className={sectionClass}>
+      <section id="que-es" className={`${sectionClass} animate-fade-in-up delay-200`}>
         <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
           <Card className="rounded-[1.9rem]">
             <CardHeader>
@@ -338,7 +338,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="funciones" className={sectionClass}>
+      <section id="funciones" className={`${sectionClass} animate-fade-in-up delay-300`}>
         <div className="max-w-3xl">
           <p className={eyebrowClass}>Qué puedes consultar</p>
           <h2 className={titleClass}>Desde notas hasta avance académico y profesores</h2>
@@ -364,7 +364,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className={sectionClass}>
+      <section className={`${sectionClass} animate-fade-in-up delay-400`}>
         <div className="landing-panel rounded-[2rem] px-6 py-8 lg:px-8">
           <div className="max-w-3xl">
             <p className={eyebrowClass}>Beneficios para estudiantes</p>
@@ -382,7 +382,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="modulos" className={sectionClass}>
+      <section id="modulos" className={`${sectionClass} animate-fade-in-up delay-500`}>
         <div className="max-w-3xl">
           <p className={eyebrowClass}>Módulos principales</p>
           <h2 className={titleClass}>Dashboard, plan, analytics y otras vistas clave</h2>

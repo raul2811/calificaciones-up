@@ -20,20 +20,19 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard" },
-  { href: "/plan", label: "Plan" },
+  { href: "/plan", label: "Plan de Estudios" },
   { href: "/pendientes", label: "Pendientes" },
   { href: "/analytics", label: "Analytics" },
   { href: "/recovery", label: "Recovery" },
   { href: "/profesores", label: "Profesores" },
   { href: "/morosidad", label: "Morosidad" },
-  { href: "/perfil", label: "Perfil" },
+  { href: "/perfil", label: "Perfil del Estudiante" },
 ];
 
 function normalizeText(value: unknown, fallback = "-"): string {
   if (typeof value !== "string") {
     return fallback;
   }
-
   const normalized = value.trim();
   return normalized || fallback;
 }
@@ -52,12 +51,12 @@ function financialStatusLabel(status: unknown): string {
 function financialStatusClass(status: unknown): string {
   const normalized = normalizeText(status, "desconocido").toLowerCase();
   if (normalized === "paz_y_salvo") {
-    return "status-success";
+    return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
   }
   if (normalized === "moroso") {
-    return "status-danger";
+    return "bg-rose-500/10 text-rose-600 border-rose-500/20";
   }
-  return "status-neutral";
+  return "bg-[var(--surface-muted)] text-[var(--foreground-muted)] border-[var(--border)]";
 }
 
 export function AuthenticatedShellClient({ children }: AuthenticatedShellClientProps) {
@@ -95,35 +94,22 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
 
   useEffect(() => {
     let isMounted = true;
-
     async function checkSession() {
       try {
         const session = await getSession();
-
-        if (!isMounted) {
-          return;
-        }
-
+        if (!isMounted) return;
         if (!session.authenticated) {
           router.replace("/login");
           return;
         }
-
         setIsCheckingSession(false);
       } catch {
-        if (!isMounted) {
-          return;
-        }
-
+        if (!isMounted) return;
         router.replace("/login");
       }
     }
-
     void checkSession();
-
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, [router]);
 
   const studentName = normalizeText(student.name, "Estudiante");
@@ -132,22 +118,15 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
   const studentIndex = normalizeText(student.currentIndex);
 
   const shellStatus = useMemo(() => {
-    if (state.status === "loading") {
-      return "Cargando expediente...";
-    }
-    if (state.status === "error") {
-      return "Error cargando expediente";
-    }
-    if (state.status === "empty") {
-      return "Sin materias registradas";
-    }
+    if (state.status === "loading") return "Cargando expediente...";
+    if (state.status === "error") return "Error cargando expediente";
+    if (state.status === "empty") return "Sin materias registradas";
     return "Expediente actualizado";
   }, [state.status]);
 
   async function handleLogout() {
     setError(null);
     setIsLoggingOut(true);
-
     try {
       await logout();
       router.replace("/");
@@ -159,93 +138,67 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
 
   if (isCheckingSession) {
     return (
-      <main className="min-h-screen p-4" role="main">
-        <section
-          className="surface-hero mx-auto w-full max-w-7xl rounded-2xl p-10"
-          aria-label="Verificando sesión"
-          aria-live="polite"
-          aria-busy="true"
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className="h-4 w-4 animate-spin rounded-full border-2 border-[var(--accent)] border-t-transparent"
-              aria-hidden="true"
-            />
-            <p className="text-sm font-medium text-[var(--foreground-soft)]">Verificando sesión...</p>
-          </div>
+      <main className="min-h-screen p-4 flex items-center justify-center bg-[var(--background)]" role="main">
+        <section className="surface-hero rounded-3xl p-12 max-w-sm w-full shadow-2xl flex flex-col items-center gap-6" aria-label="Verificando sesión">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-[var(--accent)] border-t-transparent shadow-[0_0_15px_var(--accent-glow)]" />
+          <p className="text-base font-semibold text-[var(--foreground)] tracking-wide">Validando acceso...</p>
         </section>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen" role="main">
-      <div className="mx-auto grid min-h-screen w-full max-w-[1920px] grid-cols-1 gap-4 p-3 lg:grid-cols-[300px_1fr] lg:p-4">
+    <main className="min-h-screen bg-[var(--background)] selection:bg-[var(--accent)] selection:text-white" role="main">
+      <div className="mx-auto grid min-h-screen w-full max-w-[1920px] grid-cols-1 gap-6 p-4 lg:grid-cols-[320px_1fr] lg:p-6">
 
-        {/* ── Sidebar ── */}
+        {/* ── Sidebar Premium ── */}
         <aside
-          className="shell-sidebar rounded-2xl px-5 py-6 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:self-start lg:overflow-y-auto lg:px-5 lg:py-6"
+          className="surface-panel rounded-[2rem] px-6 py-8 lg:sticky lg:top-6 lg:max-h-[calc(100vh-3rem)] lg:self-start lg:overflow-y-auto lg:px-6 lg:py-8 border border-[var(--border)] shadow-xl backdrop-blur-3xl flex flex-col"
           aria-label="Panel de navegación"
         >
-
           {/* Student identity */}
-          <div className="flex items-center gap-3.5">
-            <StudentPhoto name={studentName} size={56} roundedClassName="rounded-xl" />
+          <div className="flex items-center gap-4">
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] rounded-2xl blur opacity-30 group-hover:opacity-70 transition duration-500" />
+              <StudentPhoto name={studentName} size={60} roundedClassName="rounded-[1.1rem] relative z-10" />
+            </div>
             <div className="min-w-0 flex-1">
-              <p
-                className="section-kicker text-[10px] font-semibold uppercase tracking-[0.2em]"
-                aria-hidden="true"
-              >
-                Estudiante
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]" aria-hidden="true">
+                Universidad de Panamá
               </p>
-              <h2 className="mt-0.5 truncate text-[15px] font-semibold leading-snug text-[var(--foreground)]">
+              <h2 className="mt-1 truncate text-lg font-black leading-tight text-[var(--foreground)]">
                 {studentName}
               </h2>
-              <p className="truncate text-[12px] text-[var(--foreground-muted)]">{studentCareer}</p>
+              <p className="mt-0.5 truncate text-[12px] font-medium text-[var(--foreground-muted)]">{studentCareer}</p>
             </div>
           </div>
 
           {/* Stats grid */}
-          <div
-            className="mt-5 grid grid-cols-2 gap-2.5"
-            role="group"
-            aria-label="Datos académicos"
-          >
-            <div className="surface-elevated rounded-xl px-3.5 py-3">
-              <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--foreground-muted)]">Plan</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{studentPlan}</p>
+          <div className="mt-8 grid grid-cols-2 gap-3" role="group" aria-label="Datos académicos">
+            <div className="surface-elevated rounded-2xl px-4 py-3.5 border border-[var(--border-soft)] shadow-sm hover:border-[var(--accent)] transition-colors duration-300">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)] mb-1">Plan</p>
+              <p className="text-sm font-black text-[var(--foreground)] truncate">{studentPlan}</p>
             </div>
-            <div className="surface-elevated rounded-xl px-3.5 py-3">
-              <p className="text-[10px] font-medium uppercase tracking-[0.14em] text-[var(--foreground-muted)]">Índice</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">{studentIndex}</p>
+            <div className="surface-elevated rounded-2xl px-4 py-3.5 border border-[var(--border-soft)] shadow-sm hover:border-[var(--accent)] transition-colors duration-300">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)] mb-1">Índice</p>
+              <p className="text-sm font-black text-[var(--accent)] truncate">{studentIndex}</p>
             </div>
           </div>
 
           {/* Status badges */}
-          <div
-            className="mt-3.5 flex flex-wrap gap-2"
-            role="group"
-            aria-label="Estado del estudiante"
-          >
-            <div
-              className={`inline-flex items-center rounded-full border px-3 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em] ${financialStatusClass(morosidad?.status)}`}
-              aria-label={`Estado financiero: ${financialStatusLabel(morosidad?.status)}`}
-            >
+          <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Estado del estudiante">
+            <div className={`inline-flex items-center rounded-full border px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] backdrop-blur-sm ${financialStatusClass(morosidad?.status)}`}>
+              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-current" />
               {financialStatusLabel(morosidad?.status)}
             </div>
-            <div
-              className="status-neutral inline-flex items-center rounded-full border px-3 py-1 text-[10.5px] font-semibold uppercase tracking-[0.14em]"
-              aria-live="polite"
-            >
+            <div className="bg-[var(--accent-soft)] text-[var(--accent)] border-[var(--ring)] inline-flex items-center rounded-full border px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.18em] backdrop-blur-sm">
+              <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-current animate-pulse" />
               {shellStatus}
             </div>
           </div>
 
           {/* Navigation */}
-          <nav
-            className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-1"
-            aria-label="Navegación principal"
-          >
+          <nav className="mt-8 flex flex-col gap-1.5 flex-1" aria-label="Navegación principal">
             {NAV_ITEMS.map((item) => {
               const active = pathname === item.href;
               return (
@@ -254,12 +207,16 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={[
-                    "rounded-xl px-3.5 py-2.5 text-[13.5px] font-medium",
-                    "transition-all duration-200 focus-visible:outline-none",
-                    "focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
-                    active ? "nav-link nav-link-active" : "nav-link",
+                    "relative flex items-center rounded-xl px-4 py-3 text-[14px] font-bold tracking-wide overflow-hidden",
+                    "transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]",
+                    active 
+                      ? "text-white shadow-md shadow-[var(--accent-glow)] translate-x-1" 
+                      : "text-[var(--foreground-soft)] hover:text-[var(--foreground)] hover:bg-[var(--surface-elevated)] hover:translate-x-1",
                   ].join(" ")}
                 >
+                  {active && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-[var(--accent)] to-[var(--accent-strong)] -z-10" />
+                  )}
                   {item.label}
                 </Link>
               );
@@ -267,73 +224,72 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
           </nav>
 
           {/* Actions */}
-          <div className="mt-5 grid gap-2">
+          <div className="mt-8 pt-6 border-t border-[var(--border-soft)] grid gap-3">
             <button
               type="button"
               onClick={() => setTheme((prev) => (prev === "light" ? "dark" : "light"))}
               aria-label={theme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
               aria-pressed={theme === "dark"}
-              className="btn-secondary rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="btn-secondary rounded-xl px-4 py-3 text-[13px] font-bold tracking-wide focus-visible:outline-none hover:-translate-y-0.5"
             >
-              {theme === "dark" ? "Modo claro" : "Modo oscuro"}
+              {theme === "dark" ? "☀️ Modo Claro" : "🌙 Modo Oscuro"}
             </button>
             <button
               type="button"
               onClick={handleLogout}
               disabled={isLoggingOut}
-              aria-busy={isLoggingOut}
-              className="btn-primary rounded-xl px-3.5 py-2.5 text-[13.5px] font-semibold disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--ring)]"
+              className="bg-transparent border border-rose-500/20 text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl px-4 py-3 text-[13px] font-bold tracking-wide transition-all duration-300 disabled:opacity-50 hover:-translate-y-0.5"
             >
-              {isLoggingOut ? "Cerrando..." : "Cerrar sesión"}
+              {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
             </button>
           </div>
         </aside>
 
         {/* ── Main content ── */}
         <section
-          className="shell-main rounded-2xl px-5 py-6 sm:px-7 xl:px-9"
+          className="surface-main rounded-[2rem] border border-[var(--border)] shadow-2xl bg-[var(--surface)] backdrop-blur-3xl px-6 py-8 sm:px-10 lg:px-12 relative overflow-hidden"
           aria-label="Contenido principal"
         >
-          <header className="divider-default mb-7 border-b pb-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div>
-                <p
-                  className="section-kicker text-[10px] font-semibold uppercase tracking-[0.22em]"
-                  aria-hidden="true"
-                >
-                  Plataforma académica
-                </p>
-                <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
-                  {env.appName}
-                </h1>
-                <p className="mt-2 max-w-2xl text-[13px] leading-relaxed text-[var(--foreground-soft)]">
-                  Visualización académica clara para consultar expediente, avance, analytics, recovery y datos clave del estudiante.
+          {/* Elemento decorativo de fondo */}
+          <div className="absolute -top-[20%] -right-[10%] w-[50%] h-[50%] rounded-full bg-[var(--accent-glow)] blur-[120px] pointer-events-none opacity-50" />
+
+          <header className="mb-10 flex flex-wrap items-end justify-between gap-6 border-b border-[var(--border-soft)] pb-8 relative z-10">
+            <div className="animate-fade-in-up">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--surface-elevated)] border border-[var(--border-soft)] mb-4">
+                <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[var(--foreground-muted)]">
+                  Plataforma Académica
                 </p>
               </div>
-              <div
-                className="surface-elevated rounded-xl px-4 py-3 text-right"
-                aria-live="polite"
-                aria-label={`Estado actual: ${shellStatus}`}
-              >
-                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--foreground-muted)]">
-                  Estado actual
-                </p>
-                <p className="mt-1 text-[13px] font-semibold text-[var(--foreground)]">{shellStatus}</p>
+              <h1 className="text-4xl font-black tracking-tight text-[var(--foreground)] leading-tight">
+                {env.appName}
+              </h1>
+              <p className="mt-3 max-w-2xl text-[15px] font-medium leading-relaxed text-[var(--foreground-soft)]">
+                Consulta tu expediente, analiza tu progreso, y mantén el control de tu información académica con claridad y precisión.
+              </p>
+            </div>
+            
+            <div className="surface-elevated rounded-2xl px-5 py-4 text-right border border-[var(--border-strong)] shadow-lg backdrop-blur-md animate-fade-in-up delay-100">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)] mb-1">
+                Estado del Sistema
+              </p>
+              <div className="flex items-center justify-end gap-2">
+                <span className="text-sm font-black text-[var(--foreground)]">{shellStatus}</span>
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
               </div>
             </div>
           </header>
 
-          {error ? (
-            <div
-              role="alert"
-              aria-live="assertive"
-              className="status-danger mb-6 rounded-xl border px-4 py-3 text-[13px] font-medium"
-            >
+          {error && (
+            <div role="alert" className="animate-fade-in-up bg-rose-500/10 border border-rose-500/30 text-rose-500 mb-8 rounded-2xl px-5 py-4 text-sm font-bold shadow-sm flex items-center gap-3 relative z-10">
+              <span className="flex items-center justify-center w-6 h-6 rounded-full bg-rose-500/20">!</span>
               {error}
             </div>
-          ) : null}
+          )}
 
-          <div className="space-y-5">{children}</div>
+          <div className="relative z-10 animate-fade-in-up delay-200">
+            {children}
+          </div>
         </section>
       </div>
     </main>

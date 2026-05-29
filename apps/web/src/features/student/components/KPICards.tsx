@@ -64,23 +64,24 @@ export function KPICards({
 
   return (
     <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-      {cards.map((card) => (
+      {cards.map((card, index) => (
         <button
           key={card.key}
           type="button"
           onClick={() => onCardClick?.(card.key)}
           disabled={!interactive}
           aria-pressed={interactive ? activeKey === card.key : undefined}
-          className={`rounded-[1.4rem] p-5 text-left transition-all duration-200 ${
+          className={`rounded-[1.6rem] p-6 text-left transition-all duration-300 border border-[var(--border)] animate-fade-in-up ${
             cardClasses(card.tone)
-          } ${interactive ? "metric-card--interactive cursor-pointer" : ""} ${
-            activeKey === card.key ? "metric-card--active" : ""
+          } ${interactive ? "hover:-translate-y-1 hover:shadow-lg hover:border-[var(--accent)] cursor-pointer" : "cursor-default"} ${
+            activeKey === card.key ? "ring-2 ring-[var(--accent)] border-transparent" : ""
           }`}
+          style={{ animationDelay: `${index * 50}ms` }}
         >
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">{card.label}</p>
-          <p className="mt-4 text-3xl font-semibold tracking-tight text-primary">{card.value}</p>
-          <p className="mt-2 text-sm leading-6 text-foreground-soft">{card.helper}</p>
-          {interactive ? <p className="section-kicker mt-4 text-xs font-medium">Abrir detalle</p> : null}
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)]">{card.label}</p>
+          <p className="mt-3 text-3xl font-black tracking-tight text-[var(--foreground)]">{card.value}</p>
+          <p className="mt-3 text-[13px] font-medium leading-relaxed text-[var(--foreground-soft)]">{card.helper}</p>
+          {interactive ? <p className="mt-5 text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--accent)] opacity-80 group-hover:opacity-100">Abrir detalle →</p> : null}
         </button>
       ))}
     </section>
