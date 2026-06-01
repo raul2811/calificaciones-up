@@ -32,8 +32,8 @@ export function PerfilPage() {
     <div className="space-y-6">
       <StudentHeader student={student} />
       <section className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-        <article className="metric-card metric-card--success rounded-[1.6rem] p-5">
-          <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <article className="metric-card metric-card--success rounded-xl p-5">
+          <p className="section-kicker">
             Materias aprobadas
           </p>
           <p className="mt-4 text-4xl font-semibold tracking-tight text-primary">
@@ -41,8 +41,8 @@ export function PerfilPage() {
           </p>
           <p className="mt-2 text-sm leading-7 text-foreground-soft">Carga academica completada con exito.</p>
         </article>
-        <article className="metric-card metric-card--warning rounded-[1.6rem] p-5">
-          <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <article className="metric-card metric-card--warning rounded-xl p-5">
+          <p className="section-kicker">
             Materias pendientes
           </p>
           <p className="mt-4 text-4xl font-semibold tracking-tight text-primary">
@@ -50,8 +50,8 @@ export function PerfilPage() {
           </p>
           <p className="mt-2 text-sm leading-7 text-foreground-soft">Materias aun por resolver dentro del plan.</p>
         </article>
-        <article className="metric-card metric-card--neutral rounded-[1.6rem] p-5">
-          <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">
+        <article className="metric-card metric-card--neutral rounded-xl p-5">
+          <p className="section-kicker">
             Avance
           </p>
           <p className="mt-4 text-4xl font-semibold tracking-tight text-primary">

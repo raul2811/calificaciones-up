@@ -1,22 +1,36 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import Link from "next/link";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Anchor,
+  Alert,
+  Button,
+  Divider,
+  Fieldset,
+  Group,
+  PasswordInput,
+  Select,
+  Stack,
+  Text,
+  TextInput,
+  Title,
+} from "@mantine/core";
 
 import {
+  AUTH_FIELD_NAMES,
   CLASE_OPTIONS,
   FOLIO_MAX_LENGTH,
   NUMERIC_ONLY_REGEX,
   PROVINCIA_OPTIONS,
   TOMO_MAX_LENGTH,
 } from "@/features/auth/constants";
-import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { login } from "@/features/auth/api";
 import type { AuthRequest, ClaseCode, ProvinciaCode } from "@/features/auth/types";
 import { ApiClientError } from "@/lib/api/client";
 import { getEnv } from "@/lib/env";
-import Link from "next/link";
+import styles from "@/features/auth/components/LoginForm.module.css";
 
 type FormState = {
   provincia: ProvinciaCode;
@@ -26,21 +40,29 @@ type FormState = {
   password: string;
 };
 
+const INITIAL_FORM: FormState = {
+  provincia: PROVINCIA_OPTIONS[0],
+  clase: CLASE_OPTIONS[0],
+  tomo: "",
+  folio: "",
+  password: "",
+};
+
 function validateForm(values: FormState): string | null {
   if (!PROVINCIA_OPTIONS.includes(values.provincia)) {
-    return "Provincia invalida.";
+    return "Provincia inválida.";
   }
 
   if (!CLASE_OPTIONS.includes(values.clase)) {
-    return "Clase invalida.";
+    return "Clase inválida.";
   }
 
   if (!values.tomo || !NUMERIC_ONLY_REGEX.test(values.tomo) || values.tomo.length > TOMO_MAX_LENGTH) {
-    return `Tomo debe ser numerico y tener maximo ${TOMO_MAX_LENGTH} digitos.`;
+    return `Tomo debe ser numérico y tener máximo ${TOMO_MAX_LENGTH} dígitos.`;
   }
 
   if (!values.folio || !NUMERIC_ONLY_REGEX.test(values.folio) || values.folio.length > FOLIO_MAX_LENGTH) {
-    return `Folio debe ser numerico y tener maximo ${FOLIO_MAX_LENGTH} digitos.`;
+    return `Folio debe ser numérico y tener máximo ${FOLIO_MAX_LENGTH} dígitos.`;
   }
 
   if (!values.password.trim()) {
@@ -62,7 +84,7 @@ function getErrorMessage(error: unknown): string {
       }
     }
 
-    return "No fue posible iniciar sesion.";
+    return "No fue posible iniciar sesión.";
   }
 
   return "Error inesperado. Intenta nuevamente.";
@@ -72,17 +94,18 @@ export function LoginForm() {
   const router = useRouter();
   const env = getEnv();
 
-  const [form, setForm] = useState<FormState>({
-    provincia: PROVINCIA_OPTIONS[0],
-    clase: CLASE_OPTIONS[0],
-    tomo: "",
-    folio: "",
-    password: "",
-  });
+  const [form, setForm] = useState<FormState>(INITIAL_FORM);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const canSubmit = useMemo(() => !isLoading, [isLoading]);
+
+  const provinciaData = PROVINCIA_OPTIONS.map((option) => ({ value: option, label: option }));
+  const claseData = CLASE_OPTIONS.map((option) => ({ value: option, label: option }));
+
+  useEffect(() => {
+    router.prefetch("/dashboard");
+  }, [router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -106,13 +129,16 @@ export function LoginForm() {
 
     try {
       const result = await login(payload);
-
       if (result.authenticated) {
-        router.push("/dashboard");
+        try {
+          window.sessionStorage.setItem("up-optimistic-session", "1");
+        } catch {
+          // ignore storage failures
+        }
+        router.replace("/dashboard");
         return;
       }
-
-      setError("Credenciales invalidas.");
+      setError("Credenciales inválidas.");
     } catch (requestError) {
       setError(getErrorMessage(requestError));
     } finally {
@@ -120,165 +146,234 @@ export function LoginForm() {
     }
   }
 
+  function handleReset() {
+    setForm(INITIAL_FORM);
+    setError(null);
+  }
+
+  function handleTomoChange(value: string) {
+    setForm((prev) => ({ ...prev, tomo: value.trim() }));
+  }
+
+  function handleFolioChange(value: string) {
+    setForm((prev) => ({ ...prev, folio: value.trim() }));
+  }
+
+  function handlePasswordChange(value: string) {
+    setForm((prev) => ({ ...prev, password: value }));
+  }
+
   return (
-    <main className="min-h-screen">
-      <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-6">
-        <Link href="/" className="section-kicker text-sm font-semibold uppercase tracking-[0.22em]">
-          Calificaciones UP
-        </Link>
-        <p className="text-sm text-foreground-muted">Acceso para estudiantes</p>
+    <main className={styles.shell}>
+      <header className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href="/" className="landing-brand">
+            <span className="landing-brand-mark">UP</span>
+            <span>{env.appName}</span>
+          </Link>
+          <Text size="sm" c="dimmed">
+            Acceso para estudiantes
+          </Text>
+        </div>
       </header>
 
-      <section className="mx-auto grid min-h-[calc(100vh-76px)] w-full max-w-7xl gap-8 px-4 py-8 lg:grid-cols-[0.98fr_0.72fr] lg:items-center lg:px-6 lg:py-12">
-        <article className="surface-hero hidden rounded-[2rem] p-10 lg:block">
-          <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.24em]">Acceso institucional</p>
-          <h1 className="mt-4 max-w-xl text-5xl font-semibold tracking-tight text-primary">
-            Consulta tu expediente academico con una interfaz mas clara y profesional
-          </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-foreground-soft">
-            Ingresa para revisar dashboard, plan academico, analytics, pendientes, recovery, profesores y morosidad dentro de {env.appName}.
-          </p>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2">
-            {[
-              ["Notas y avance", "Resumenes claros para leer el progreso real del estudiante."],
-              ["Plan y pendientes", "Tabla mas util para detectar bloqueos y materias por resolver."],
-              ["Analytics", "Graficas y distribuciones integradas a la consulta academica."],
-              ["Estado financiero", "Morosidad y paz y salvo dentro del mismo flujo."],
-            ].map(([title, description]) => (
-              <div key={title} className="surface-elevated rounded-[1.4rem] p-5">
-                <h2 className="text-base font-semibold text-primary">{title}</h2>
-                <p className="mt-2 text-sm leading-7 text-foreground-soft">{description}</p>
-              </div>
-            ))}
+      <section className={styles.content}>
+        <article className={styles.asidePanel}>
+          <Text className="section-kicker">Acceso institucional</Text>
+          <Title order={1} mt="sm" className="text-primary">
+            Consulta tu expediente académico con una interfaz más clara
+          </Title>
+          <Text mt="md" size="md" c="dimmed">
+            La plataforma organiza dashboard, plan, analytics, pendientes, recovery, profesores y morosidad en un flujo de consulta más legible para el estudiante.
+          </Text>
+
+          <div className={styles.heroGrid}>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {[
+                ["Plan y avance", "Lectura rápida del historial, créditos y progreso."],
+                ["Pendientes", "Bloqueos y materias por resolver con prioridad visual."],
+                ["Analytics", "Distribuciones útiles derivadas del expediente real."],
+                ["Morosidad", "Estado financiero dentro del mismo flujo de consulta."],
+              ].map(([title, description]) => (
+                <section key={title} className={`surface-elevated ${styles.heroCard}`}>
+                  <Title order={3} size="h5" className="text-primary">
+                    {title}
+                  </Title>
+                  <Text mt="xs" size="sm" c="dimmed">
+                    {description}
+                  </Text>
+                </section>
+              ))}
+            </div>
           </div>
         </article>
 
-        <article className="surface-hero w-full max-w-xl justify-self-center rounded-[2rem] p-8 shadow-[0_28px_72px_-40px_rgba(15,23,42,0.35)] sm:p-9">
-          <div className="mb-8">
-            <div className="btn-primary mb-5 flex h-14 w-14 items-center justify-center rounded-2xl text-xl font-semibold">UP</div>
-            <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.22em]">Iniciar sesion</p>
-            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-primary">{env.appName}</h2>
-            <p className="mt-3 max-w-lg text-sm leading-7 text-foreground-soft">
-              Accede a tu historial academico con tus credenciales actuales. La interfaz prioriza lectura rapida, contraste y flujo claro en escritorio y movil.
-            </p>
-          </div>
-
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="provincia" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
-                  Provincia
-                </label>
-                <Select
-                  id="provincia"
-                  name="provincia"
-                  value={form.provincia}
-                  onChange={(event) => setForm((prev) => ({ ...prev, provincia: event.target.value as ProvinciaCode }))}
-                  disabled={isLoading}
-                >
-                  {PROVINCIA_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-
-              <div>
-                <label htmlFor="clase" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
-                  Clase
-                </label>
-                <Select
-                  id="clase"
-                  name="clase"
-                  value={form.clase}
-                  onChange={(event) => setForm((prev) => ({ ...prev, clase: event.target.value as ClaseCode }))}
-                  disabled={isLoading}
-                >
-                  {CLASE_OPTIONS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="tomo" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
-                  Tomo
-                </label>
-                <Input
-                  id="tomo"
-                  name="tomo"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={TOMO_MAX_LENGTH}
-                  value={form.tomo}
-                  onChange={(event) => setForm((prev) => ({ ...prev, tomo: event.target.value.trim() }))}
-                  disabled={isLoading}
-                  required
-                />
-              </div>
-
-              <div>
-                <label htmlFor="folio" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
-                  Folio
-                </label>
-                <Input
-                  id="folio"
-                  name="folio"
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={FOLIO_MAX_LENGTH}
-                  value={form.folio}
-                  onChange={(event) => setForm((prev) => ({ ...prev, folio: event.target.value.trim() }))}
-                  disabled={isLoading}
-                  required
-                />
-              </div>
-            </div>
-
+        <article className={`surface-hero ${styles.formPanel}`}>
+          <Stack gap="md">
             <div>
-              <label htmlFor="password" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
-                Password
-              </label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={form.password}
-                onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
-                disabled={isLoading}
-                required
-              />
+              <Text className="section-kicker">Iniciar sesión</Text>
+              <Title order={2} mt="xs" className="text-primary">
+                {env.appName}
+              </Title>
+              <Text mt="xs" size="sm" c="dimmed">
+                Usa tus credenciales actuales para abrir el expediente académico.
+              </Text>
             </div>
 
-            {error ? (
-              <p className="status-danger rounded-2xl border px-4 py-3 text-sm font-medium" role="alert" aria-live="assertive">
-                {error}
-              </p>
-            ) : null}
+            <Divider className={styles.mantineDivider} />
 
-            <button
-              type="submit"
-              disabled={!canSubmit}
-              className="btn-primary mt-2 w-full rounded-xl px-4 py-3 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isLoading ? "Ingresando..." : "Entrar al portal"}
-            </button>
-          </form>
+            <form className={styles.formSection} onSubmit={handleSubmit}>
+              <Stack gap="md">
+                <Fieldset legend="Cédula" classNames={{ root: styles.fieldSet, legend: styles.fieldSetLegend }}>
+                  <div className={styles.cedulaRow}>
+                    <div className={`${styles.cedulaCol} ${styles.mantineInput}`}>
+                      <Select
+                        aria-label="Provincia"
+                        data={provinciaData}
+                        name={AUTH_FIELD_NAMES.provincia}
+                        value={form.provincia}
+                        onChange={(value) => setForm((prev) => ({ ...prev, provincia: (value ?? PROVINCIA_OPTIONS[0]) as ProvinciaCode }))}
+                        disabled={isLoading}
+                        allowDeselect={false}
+                        size="md"
+                        comboboxProps={{ withinPortal: false }}
+                        classNames={{
+                          root: styles.mantineFieldRoot,
+                          input: styles.mantineControl,
+                          dropdown: styles.mantineDropdown,
+                          option: styles.mantineOption,
+                        }}
+                      />
+                      <Text className={styles.controlLabel}>Provincia</Text>
+                    </div>
 
-          <div className="mt-7 flex flex-wrap items-center justify-between gap-3 text-xs text-foreground-muted">
-            <p className="text-foreground-muted">
-              <span className="mr-1 inline-block h-2.5 w-2.5 rounded-full align-middle" style={{ background: "var(--chart-success)", boxShadow: "0 0 14px var(--success-border)" }} />
-              Estado del sistema: operativo
-            </p>
-            <Link href="/" className="section-kicker font-semibold transition hover:text-primary">
-              Volver al inicio
-            </Link>
-          </div>
+                    <div className={`${styles.cedulaCol} ${styles.mantineInput}`}>
+                      <Select
+                        aria-label="Clase"
+                        data={claseData}
+                        name={AUTH_FIELD_NAMES.clase}
+                        value={form.clase}
+                        onChange={(value) => setForm((prev) => ({ ...prev, clase: (value ?? CLASE_OPTIONS[0]) as ClaseCode }))}
+                        disabled={isLoading}
+                        allowDeselect={false}
+                        size="md"
+                        comboboxProps={{ withinPortal: false }}
+                        classNames={{
+                          root: styles.mantineFieldRoot,
+                          input: styles.mantineControl,
+                          dropdown: styles.mantineDropdown,
+                          option: styles.mantineOption,
+                        }}
+                      />
+                      <Text className={styles.controlLabel}>Clase</Text>
+                    </div>
+
+                    <div className={`${styles.cedulaCol} ${styles.mantineInput}`}>
+                      <TextInput
+                        aria-label="Tomo"
+                        name={AUTH_FIELD_NAMES.tomo}
+                        inputMode="numeric"
+                        maxLength={TOMO_MAX_LENGTH}
+                        value={form.tomo}
+                        onChange={(event) => handleTomoChange(event.target.value)}
+                        disabled={isLoading}
+                        placeholder="Tomo"
+                        size="md"
+                        classNames={{
+                          root: styles.mantineFieldRoot,
+                          input: styles.mantineControl,
+                        }}
+                      />
+                      <Text className={styles.controlLabel}>Tomo</Text>
+                    </div>
+
+                    <div className={`${styles.cedulaCol} ${styles.mantineInput}`}>
+                      <TextInput
+                        aria-label="Folio"
+                        name={AUTH_FIELD_NAMES.folio}
+                        inputMode="numeric"
+                        maxLength={FOLIO_MAX_LENGTH}
+                        value={form.folio}
+                        onChange={(event) => handleFolioChange(event.target.value)}
+                        disabled={isLoading}
+                        placeholder="Folio"
+                        size="md"
+                        classNames={{
+                          root: styles.mantineFieldRoot,
+                          input: styles.mantineControl,
+                        }}
+                      />
+                      <Text className={styles.controlLabel}>Folio</Text>
+                    </div>
+                  </div>
+                </Fieldset>
+
+                <div className={styles.mantineInput}>
+                  <Text fw={500} size="sm" mb={8} className="text-primary">
+                    Contraseña
+                  </Text>
+                  <PasswordInput
+                    name={AUTH_FIELD_NAMES.password}
+                    value={form.password}
+                    onChange={(event) => handlePasswordChange(event.target.value)}
+                    disabled={isLoading}
+                    placeholder="Ingresa tu contraseña"
+                    size="md"
+                    classNames={{
+                      root: styles.mantineFieldRoot,
+                      input: styles.mantineControl,
+                      section: styles.mantineSection,
+                    }}
+                  />
+                </div>
+
+                {error ? (
+                  <Alert className={`${styles.errorBox} ${styles.mantineAlert}`} role="alert" aria-live="assertive">
+                    {error}
+                  </Alert>
+                ) : null}
+
+                <Group grow>
+                  <Button type="submit" loading={isLoading} disabled={!canSubmit} size="md" radius="md" className={styles.mantineButtonPrimary}>
+                    {isLoading ? "Verificando credenciales institucionales..." : "Entrar al portal"}
+                  </Button>
+                  <Button type="button" variant="default" onClick={handleReset} disabled={isLoading} size="md" radius="md" className={styles.mantineButtonSecondary}>
+                    Limpiar
+                  </Button>
+                </Group>
+
+                <Anchor component={Link} href="/" ta="center" size="sm" className={styles.mantineAnchor}>
+                  Volver al inicio
+                </Anchor>
+
+                <Group className={styles.auxLinks}>
+                  <Anchor
+                    component="button"
+                    type="button"
+                    size="sm"
+                    c="dimmed"
+                    className={styles.mantineAnchor}
+                    onClick={(event) => event.preventDefault()}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </Anchor>
+                  <Text size="sm" className={styles.secondaryText}>
+                    |
+                  </Text>
+                  <Anchor
+                    component="button"
+                    type="button"
+                    size="sm"
+                    c="dimmed"
+                    className={styles.mantineAnchor}
+                    onClick={(event) => event.preventDefault()}
+                  >
+                    Regístrate
+                  </Anchor>
+                </Group>
+              </Stack>
+            </form>
+          </Stack>
         </article>
       </section>
     </main>

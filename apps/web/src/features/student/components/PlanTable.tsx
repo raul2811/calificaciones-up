@@ -2,6 +2,7 @@
 
 import { Fragment } from "react";
 
+import { EmptyState } from "@/components/common/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -114,11 +115,11 @@ export function PlanTable({
   }
 
   return (
-    <section className="surface-panel overflow-hidden rounded-[1.75rem] p-5 lg:p-6">
+    <section className="surface-panel overflow-hidden rounded-xl p-5 lg:p-6">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Plan general</h3>
-          <p className="mt-2 text-base font-semibold text-primary">Tabla principal del expediente academico</p>
+          <h3 className="section-kicker">Plan general</h3>
+          <p className="mt-2 text-base font-semibold text-primary">Tabla principal del expediente académico</p>
           <p className="mt-1 text-sm leading-7 text-foreground-soft">Ordena, filtra y expande materias para revisar mejor el historial.</p>
         </div>
         <Button type="button" variant="outline" onClick={handleExportCsv}>
@@ -127,13 +128,74 @@ export function PlanTable({
       </div>
 
       {subjects.length === 0 ? (
-        <div className="empty-state rounded-[1.4rem] p-8 text-center">
-          <p className="text-sm font-medium text-foreground-soft">No hay materias para mostrar con los filtros actuales.</p>
-          <p className="mt-2 text-sm text-foreground-muted">Ajusta busqueda, estado o criterio de ordenamiento.</p>
-        </div>
+        <EmptyState
+          title="No hay materias para mostrar"
+          description="Ajusta búsqueda, estado o criterio de ordenamiento."
+        />
       ) : (
-        <div className="table-shell overflow-x-auto rounded-[1.35rem]">
-          <Table>
+        <>
+          <div className="space-y-3 md:hidden">
+            {subjects.map((subject, index) => {
+              const rowKey = buildSubjectStableKey(subject);
+              const expanded = expandedRowKey === rowKey;
+              return (
+                <article key={buildSubjectRenderKey(subject, index, "plan-cards")} className="surface-elevated rounded-lg p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-primary">{subject.name || "-"}</p>
+                      <p className="mt-1 text-sm text-foreground-soft">{subject.code || "-"}</p>
+                    </div>
+                    <Badge variant={toBadgeVariant(subject.status)}>{subject.status || "-"}</Badge>
+                  </div>
+                  <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <dt className="text-foreground-muted">Plan</dt>
+                      <dd className="mt-1 text-foreground-soft">{subject.planYear || "-"} / {subject.planSemester || "-"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-foreground-muted">Créditos</dt>
+                      <dd className="mt-1 text-foreground-soft">{subject.creditsText || subject.credits.toFixed(1)}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-foreground-muted">Nota</dt>
+                      <dd className="mt-1 text-foreground-soft">{subject.gradeText || (subject.grade === null ? "-" : String(subject.grade))}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-foreground-muted">Cursado</dt>
+                      <dd className="mt-1 text-foreground-soft">{subject.year || "-"} / {subject.semester || "-"}</dd>
+                    </div>
+                  </dl>
+                  {subject.observation ? (
+                    <p className="mt-4 text-sm leading-6 text-foreground-soft">{subject.observation}</p>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => onToggleRow?.(rowKey)}
+                    className="table-action mt-4 rounded-md px-3 py-2 text-sm font-medium"
+                  >
+                    {expanded ? "Ocultar detalle" : "Ver detalle"}
+                  </button>
+                  {expanded ? (
+                    <div className="mt-4 grid gap-3">
+                      {[
+                        ["Prerequisitos", subject.prerequisites || "-"],
+                        ["Intentos", subject.attempts || "-"],
+                        ["Recuperación", subject.recoveryType || "-"],
+                      ].map(([label, value]) => (
+                        <div key={label} className="rounded-md border border-[var(--border)] bg-[var(--card)] p-3">
+                          <p className="text-xs text-foreground-muted">{label}</p>
+                          <p className="mt-1 text-sm text-foreground-soft">{value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : null}
+                </article>
+              );
+            })}
+          </div>
+
+          <div className="table-shell hidden overflow-x-auto rounded-lg md:block">
+            <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead>Detalle</TableHead>
@@ -192,7 +254,7 @@ export function PlanTable({
                         <button
                           type="button"
                           onClick={() => onToggleRow?.(rowKey)}
-                          className="table-action rounded-xl px-3 py-1.5 text-xs font-semibold"
+                          className="table-action rounded-md px-3 py-1.5 text-xs font-semibold"
                           title="Ver mas detalle"
                         >
                           {expandedRowKey === rowKey ? "Ocultar" : "Ver"}
@@ -206,11 +268,11 @@ export function PlanTable({
                       <TableCell className="font-semibold text-primary">
                         {subject.gradeText || (subject.grade === null ? "-" : String(subject.grade))}
                       </TableCell>
-                      <TableCell>
-                        <button
-                          type="button"
-                          onClick={() => onStatusClick?.(subject.status)}
-                          title={`Filtrar por ${subject.status}`}
+                        <TableCell>
+                          <button
+                            type="button"
+                            onClick={() => onStatusClick?.(subject.status)}
+                            title={`Filtrar por ${subject.status}`}
                         >
                           <Badge variant={toBadgeVariant(subject.status)}>{subject.status || "-"}</Badge>
                         </button>
@@ -229,8 +291,8 @@ export function PlanTable({
                               ["Intentos", subject.attempts || "-"],
                               ["Recuperacion", subject.recoveryType || "-"],
                             ].map(([label, value]) => (
-                              <div key={label} className="surface-elevated rounded-2xl p-4">
-                                <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground-muted">{label}</p>
+                              <div key={label} className="surface-elevated rounded-lg p-4">
+                                <p className="text-xs text-foreground-muted">{label}</p>
                                 <p className="mt-2 text-sm leading-7 text-foreground-soft">{value}</p>
                               </div>
                             ))}
@@ -242,8 +304,9 @@ export function PlanTable({
                 );
               })}
             </TableBody>
-          </Table>
-        </div>
+            </Table>
+          </div>
+        </>
       )}
     </section>
   );

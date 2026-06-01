@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { Outfit } from "next/font/google";
+import { MantineProvider } from "@mantine/core";
+import { RouteLiveBackground } from "@/components/shared/RouteLiveBackground";
+import "@mantine/core/styles.css";
 import "@/styles/globals.css";
 import { siteConfig } from "@/lib/site";
 
@@ -51,11 +54,14 @@ export default function RootLayout({
   `;
 
   return (
-    <html lang="es" suppressHydrationWarning className={outfit.variable}>
+    <html lang="es" suppressHydrationWarning className={outfit.variable} data-scroll-behavior="smooth">
       <body>
         <Script src="/runtime-config" strategy="beforeInteractive" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-        {children}
+        <MantineProvider>
+          <RouteLiveBackground />
+          <div className="relative z-10 min-h-dvh">{children}</div>
+        </MantineProvider>
       </body>
     </html>
   );

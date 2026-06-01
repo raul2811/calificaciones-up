@@ -13,6 +13,9 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@mantine/core": "^7.17.8",
+    "@mantine/hooks": "^7.17.8",
+    "motion": "^12.40.0",
     "next": "^15.5.18",
     "react": "19.2.5",
     "react-dom": "19.2.5",

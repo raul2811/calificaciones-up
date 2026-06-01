@@ -1,0 +1,231 @@
+.shell {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.header {
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  backdrop-filter: blur(20px);
+}
+
+.headerInner {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 72rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem;
+}
+
+.content {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 72rem;
+  min-height: calc(100vh - 73px);
+  display: grid;
+  gap: 1.5rem;
+  padding: 2rem 1rem;
+}
+
+.asidePanel {
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.heroGrid {
+  margin-top: 2rem;
+}
+
+.heroCard {
+  border-radius: 0.875rem;
+  padding: 1rem;
+}
+
+.formPanel {
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.formSection {
+  margin-top: 1.5rem;
+}
+
+.fieldSet {
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  background: color-mix(in srgb, var(--card-muted) 92%, transparent);
+  padding: 1rem;
+}
+
+.fieldSetLegend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--foreground);
+  padding: 0 0.35rem;
+}
+
+.cedulaRow {
+  display: grid;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.cedulaCol {
+  min-width: 0;
+}
+
+.controlLabel {
+  margin-top: 0.35rem;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--foreground-muted);
+}
+
+.errorBox {
+  border-radius: 0.75rem;
+}
+
+.linksRow {
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.auxLinks {
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.secondaryText {
+  color: var(--foreground-muted);
+}
+
+.mantineFieldRoot {
+  width: 100%;
+}
+
+.mantineControl {
+  background: var(--input);
+  border-color: var(--border);
+  color: var(--foreground);
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+}
+
+.mantineControl::placeholder {
+  color: var(--foreground-muted);
+}
+
+.mantineControl:focus,
+.mantineControl:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--ring);
+}
+
+.mantineSection {
+  color: var(--foreground-muted);
+}
+
+.mantineDropdown {
+  background: var(--card-strong);
+  border: 1px solid var(--border-strong);
+  border-radius: 0.75rem;
+  backdrop-filter: blur(18px);
+}
+
+.mantineOption {
+  color: var(--foreground);
+}
+
+.mantineButtonPrimary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+}
+
+.mantineButtonPrimary:hover {
+  background: var(--primary-hover);
+}
+
+.mantineButtonSecondary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  padding: 0.7rem 1rem;
+}
+
+.mantineButtonSecondary:hover {
+  background: var(--secondary-hover);
+}
+
+.mantineButtonPrimary:disabled,
+.mantineButtonSecondary:disabled {
+  opacity: 0.55;
+}
+
+.mantineAlert {
+  border: 1px solid color-mix(in srgb, var(--danger) 26%, var(--border));
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.mantineDivider {
+  border-color: var(--border);
+}
+
+.mantineAnchor {
+  color: var(--foreground-soft);
+}
+
+.mantineAnchor:hover {
+  color: var(--foreground);
+}
+
+@media (min-width: 48rem) {
+  .headerInner {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .content {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  .cedulaRow {
+    grid-template-columns: minmax(0, 5.5rem) minmax(0, 5.5rem) minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 64rem) {
+  .content {
+    grid-template-columns: minmax(0, 1fr) minmax(22.5rem, 28rem);
+    align-items: center;
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+
+  .asidePanel {
+    padding: 2rem;
+  }
+
+  .formPanel {
+    padding: 1.75rem;
+  }
+}

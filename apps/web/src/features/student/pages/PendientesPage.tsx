@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { PageIntro } from "@/components/common/PageIntro";
 import { BlockingSubjectsPanel } from "@/features/student/components/BlockingSubjectsPanel";
 import {
   StudentPageErrorState,
@@ -57,13 +58,11 @@ export function PendientesPage() {
 
   return (
     <div className="space-y-6">
-      <section className="surface-hero rounded-[1.75rem] p-5 lg:p-6">
-        <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Pendientes y bloqueos</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-primary">Prioriza lo que afecta mas el avance</h2>
-        <p className="mt-3 text-sm leading-7 text-foreground-soft">
-          Lo que falta por resolver y lo que tiene mayor impacto sobre el avance.
-        </p>
-      </section>
+      <PageIntro
+        eyebrow="Pendientes y bloqueos"
+        title="Prioriza lo que afecta el avance"
+        description="Identifica materias no resueltas y elementos que frenan la continuidad del plan."
+      />
       <UnresolvedSubjectsPanel
         pending={analytics.unresolvedPending}
         failed={analytics.unresolvedFailed}

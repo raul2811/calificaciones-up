@@ -1,4 +1,5 @@
 import type { SubjectRow } from "@/features/student/types";
+import { EmptyState } from "@/components/common/EmptyState";
 
 type AvanceTableProps = {
   subjects: SubjectRow[];
@@ -7,15 +8,15 @@ type AvanceTableProps = {
 export function AvanceTable({ subjects }: AvanceTableProps) {
   if (subjects.length === 0) {
     return (
-      <section className="empty-state rounded-2xl p-8 text-center">
-        <p className="text-sm font-medium text-foreground-soft">No hay materias para mostrar con los filtros actuales.</p>
-        <p className="mt-1 text-sm text-foreground-muted">Ajusta la busqueda o el estado para ver resultados.</p>
-      </section>
+      <EmptyState
+        title="No hay materias para mostrar"
+        description="Ajusta la búsqueda o el estado para ver resultados."
+      />
     );
   }
 
   return (
-    <section className="table-shell overflow-hidden rounded-2xl">
+    <section className="table-shell overflow-hidden rounded-xl">
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0 text-sm">
           <thead className="text-left text-[10.5px] font-semibold uppercase tracking-[0.16em] text-foreground-muted">

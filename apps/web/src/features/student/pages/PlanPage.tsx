@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import { PageIntro } from "@/components/common/PageIntro";
 import type { SubjectView } from "@/features/student/analytics/types";
+import { TableSectionSkeleton } from "@/features/student/components/DashboardSkeletons";
 import { FiltersBar } from "@/features/student/components/FiltersBar";
 import { type PlanSortDirection, type PlanSortKey, PlanTable } from "@/features/student/components/PlanTable";
 import {
@@ -156,10 +158,13 @@ export function PlanPage() {
 
   if (state.status === "loading") {
     return (
-      <StudentPageLoadingState
-        title="Cargando plan academico"
-        description="Preparando tabla completa del expediente."
-      />
+      <div className="space-y-6">
+        <StudentPageLoadingState
+          title="Cargando plan academico"
+          description="Preparando tabla completa del expediente."
+        />
+        <TableSectionSkeleton />
+      </div>
     );
   }
 
@@ -174,20 +179,20 @@ export function PlanPage() {
 
   return (
     <div className="space-y-6">
-      <section className="surface-hero rounded-[1.75rem] p-5 lg:p-6">
-        <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Plan academico</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-primary">Vista integral del expediente</h2>
-        <p className="mt-3 text-sm leading-7 text-foreground-soft">
-          Vista integral del expediente con filtros, ordenamiento y exportacion.
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2">
+      <PageIntro
+        eyebrow="Plan académico"
+        title="Vista integral del expediente"
+        description="Consulta materias, filtros, ordenamiento y exportación desde una sola tabla."
+      />
+      <section className="surface-panel rounded-xl p-4">
+        <div className="flex flex-wrap gap-2">
           {liveStats.map(([status, count]) => (
             <button
               key={status}
               type="button"
               onClick={() => setStatusFilter(status)}
               aria-pressed={normalize(statusFilter) === status}
-              className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+              className={`rounded-full px-4 py-2 text-xs font-medium transition ${
                 normalize(statusFilter) === status ? "chip-button chip-button-active" : "chip-button"
               }`}
             >

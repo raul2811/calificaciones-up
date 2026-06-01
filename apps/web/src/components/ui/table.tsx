@@ -14,7 +14,7 @@ Table.displayName = "Table";
 export const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttributes<HTMLTableSectionElement>>(({ className, ...props }, ref) => (
   <thead
     ref={ref}
-    className={cn("bg-[var(--surface-muted)] text-[var(--foreground-muted)]", className)}
+    className={cn("bg-[var(--card-muted)] text-[var(--foreground-muted)]", className)}
     {...props}
   />
 ));
@@ -46,9 +46,9 @@ export const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttr
   <th
     ref={ref}
     className={cn(
-      "h-12 whitespace-nowrap border-b border-[var(--border-strong)] px-4 text-left align-middle",
-      "text-[10px] font-bold uppercase tracking-[0.2em] text-[var(--foreground-muted)]",
-      "first:pl-5 last:pr-5",
+      "h-11 whitespace-nowrap border-b border-[var(--border-strong)] px-4 text-left align-middle",
+      "text-xs font-semibold text-[var(--foreground-muted)]",
+      "first:pl-4 last:pr-4",
       className,
     )}
     {...props}
@@ -60,8 +60,8 @@ export const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttr
   <td
     ref={ref}
     className={cn(
-      "border-b border-[var(--border-soft)] px-4 py-3 align-middle text-[13px] text-[var(--foreground-soft)]",
-      "first:pl-5 last:pr-5",
+      "border-b border-[var(--border)] px-4 py-3 align-middle text-sm text-[var(--foreground-soft)]",
+      "first:pl-4 last:pr-4",
       className,
     )}
     {...props}

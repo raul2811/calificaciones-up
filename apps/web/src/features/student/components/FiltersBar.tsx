@@ -21,9 +21,9 @@ export function FiltersBar({
   onClearFilters,
 }: FiltersBarProps) {
   return (
-    <section className="surface-panel grid grid-cols-1 gap-4 rounded-[1.65rem] p-5 md:grid-cols-[minmax(0,1fr)_280px_auto] md:items-end">
+    <section className="surface-panel grid grid-cols-1 gap-4 rounded-xl p-5 md:grid-cols-[minmax(0,1fr)_240px_auto] md:items-end">
       <div>
-        <label htmlFor="dashboard-search" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
+        <label htmlFor="dashboard-search" className="mb-2 block text-sm font-medium text-primary">
           Buscar por codigo o nombre
         </label>
         <Input
@@ -36,7 +36,7 @@ export function FiltersBar({
       </div>
 
       <div>
-        <label htmlFor="dashboard-status" className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.18em] text-foreground-muted">
+        <label htmlFor="dashboard-status" className="mb-2 block text-sm font-medium text-primary">
           Estado academico
         </label>
         <Select
@@ -57,7 +57,7 @@ export function FiltersBar({
         <button
           type="button"
           onClick={onClearFilters}
-          className="btn-secondary h-11 rounded-xl px-4 text-sm font-semibold md:self-end"
+          className="btn-secondary h-10 rounded-md px-4 text-sm font-semibold md:self-end"
         >
           Limpiar filtros
         </button>

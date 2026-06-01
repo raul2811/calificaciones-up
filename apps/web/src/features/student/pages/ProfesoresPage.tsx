@@ -1,5 +1,6 @@
 "use client";
 
+import { PageIntro } from "@/components/common/PageIntro";
 import { ProfessorsPanel } from "@/features/student/components/ProfessorsPanel";
 import {
   StudentPageErrorState,
@@ -30,13 +31,11 @@ export function ProfesoresPage() {
 
   return (
     <div className="space-y-6">
-      <section className="surface-hero rounded-[1.75rem] p-5 lg:p-6">
-        <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Profesores</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-primary">Asignacion docente por materia</h2>
-        <p className="mt-3 text-sm leading-7 text-foreground-soft">
-          Asignacion docente por materia y periodos academicos.
-        </p>
-      </section>
+      <PageIntro
+        eyebrow="Profesores"
+        title="Asignación docente por materia"
+        description="Asignación docente por materia y períodos académicos."
+      />
       <ProfessorsPanel professors={professors} />
     </div>
   );

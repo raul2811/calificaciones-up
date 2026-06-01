@@ -1,6 +1,7 @@
 "use client";
 
 import type { SubjectView } from "@/features/student/analytics/types";
+import { PageIntro } from "@/components/common/PageIntro";
 import { RecoveryTrackingPanel } from "@/features/student/components/RecoveryTrackingPanel";
 import {
   StudentPageErrorState,
@@ -44,31 +45,27 @@ export function RecoveryPage() {
 
   return (
     <div className="space-y-6">
-      <section className="surface-hero rounded-[1.75rem] p-5 lg:p-6">
-        <p className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">Recovery e intentos</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-primary">Historial de recuperacion academica</h2>
-        <p className="mt-3 text-sm leading-7 text-foreground-soft">
-          Seguimiento de suficiencias, verano, arreglos y materias repetidas.
-        </p>
-      </section>
+      <PageIntro
+        eyebrow="Recovery e intentos"
+        title="Historial de recuperación académica"
+        description="Seguimiento de suficiencias, verano, arreglos y materias repetidas."
+      />
 
-      <section className="surface-panel rounded-[1.75rem] p-5 lg:p-6">
-        <h3 className="section-kicker text-[11px] font-semibold uppercase tracking-[0.18em]">
-          Materias con multiples intentos
-        </h3>
+      <section className="surface-panel rounded-xl p-5 lg:p-6">
+        <h3 className="section-kicker">Materias con múltiples intentos</h3>
         <p className="mt-4 text-4xl font-semibold tracking-tight text-primary">{repeatedAttempts.length}</p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button
             type="button"
             onClick={() => setMode("all")}
-            className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${mode === "all" ? "chip-button chip-button-active" : "chip-button"}`}
+            className={`rounded-full px-4 py-2 text-xs font-medium ${mode === "all" ? "chip-button chip-button-active" : "chip-button"}`}
           >
             Todos
           </button>
           <button
             type="button"
             onClick={() => setMode("attempts")}
-            className={`rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.16em] ${mode === "attempts" ? "chip-button chip-button-active" : "chip-button"}`}
+            className={`rounded-full px-4 py-2 text-xs font-medium ${mode === "attempts" ? "chip-button chip-button-active" : "chip-button"}`}
           >
             Solo repetidas
           </button>
