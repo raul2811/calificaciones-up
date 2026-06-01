@@ -64,11 +64,11 @@ function GradientBackground({ reducedMotion }: { reducedMotion: boolean }) {
           <motion.div
             key={index}
             className={cn("absolute rounded-full blur-3xl", blob.className)}
+            style={{ opacity: blob.opacity[0] }}
             animate={{
               x: blob.x,
               y: blob.y,
               scale: blob.scale,
-              opacity: blob.opacity,
             }}
             transition={{
               duration: blob.duration,
@@ -98,7 +98,8 @@ function GridBackground({ reducedMotion }: { reducedMotion: boolean }) {
       />
       <motion.div
         className="absolute inset-x-0 top-[16%] h-40 bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--theme-glow-2)_35%,transparent),transparent)] blur-3xl"
-        animate={reducedMotion ? undefined : { x: ["-4%", "6%", "-4%"], opacity: [0.35, 0.5, 0.35] }}
+        style={{ opacity: 0.35 }}
+        animate={reducedMotion ? undefined : { x: ["-4%", "6%", "-4%"] }}
         transition={
           reducedMotion
             ? undefined
@@ -135,8 +136,8 @@ function ParticleFallback({ reducedMotion }: { reducedMotion: boolean }) {
           <motion.span
             key={dot.key}
             className="absolute h-1.5 w-1.5 rounded-full bg-[var(--theme-glow-2)] opacity-60 blur-[1px]"
-            style={{ left: dot.left, top: dot.top }}
-            animate={{ opacity: [0.18, 0.6, 0.18], scale: [1, 1.8, 1] }}
+            style={{ left: dot.left, top: dot.top, opacity: 0.18 }}
+            animate={{ scale: [1, 1.8, 1] }}
             transition={{
               duration: 4.2,
               delay: dot.delay,

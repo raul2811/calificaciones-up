@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { FormEvent, useMemo, useState } from "react";
 import {
   Anchor,
   Alert,
@@ -17,6 +15,8 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import { Link, useNavigate } from "react-router-dom";
+import { z } from "zod";
 
 import {
   AUTH_FIELD_NAMES,
@@ -26,7 +26,7 @@ import {
   PROVINCIA_OPTIONS,
   TOMO_MAX_LENGTH,
 } from "@/features/auth/constants";
-import { login } from "@/features/auth/api";
+import { useLoginMutation } from "@/features/auth/queries";
 import type { AuthRequest, ClaseCode, ProvinciaCode } from "@/features/auth/types";
 import { ApiClientError } from "@/lib/api/client";
 import { getEnv } from "@/lib/env";
@@ -48,28 +48,29 @@ const INITIAL_FORM: FormState = {
   password: "",
 };
 
+const loginSchema = z.object({
+  provincia: z.string().refine((value) => PROVINCIA_OPTIONS.includes(value as ProvinciaCode), {
+    message: "Provincia inválida.",
+  }),
+  clase: z.string().refine((value) => CLASE_OPTIONS.includes(value as ClaseCode), {
+    message: "Clase inválida.",
+  }),
+  tomo: z
+    .string()
+    .min(1, "Tomo es requerido.")
+    .regex(NUMERIC_ONLY_REGEX, `Tomo debe ser numérico y tener máximo ${TOMO_MAX_LENGTH} dígitos.`)
+    .max(TOMO_MAX_LENGTH, `Tomo debe ser numérico y tener máximo ${TOMO_MAX_LENGTH} dígitos.`),
+  folio: z
+    .string()
+    .min(1, "Folio es requerido.")
+    .regex(NUMERIC_ONLY_REGEX, `Folio debe ser numérico y tener máximo ${FOLIO_MAX_LENGTH} dígitos.`)
+    .max(FOLIO_MAX_LENGTH, `Folio debe ser numérico y tener máximo ${FOLIO_MAX_LENGTH} dígitos.`),
+  password: z.string().trim().min(1, "Password es requerido."),
+});
+
 function validateForm(values: FormState): string | null {
-  if (!PROVINCIA_OPTIONS.includes(values.provincia)) {
-    return "Provincia inválida.";
-  }
-
-  if (!CLASE_OPTIONS.includes(values.clase)) {
-    return "Clase inválida.";
-  }
-
-  if (!values.tomo || !NUMERIC_ONLY_REGEX.test(values.tomo) || values.tomo.length > TOMO_MAX_LENGTH) {
-    return `Tomo debe ser numérico y tener máximo ${TOMO_MAX_LENGTH} dígitos.`;
-  }
-
-  if (!values.folio || !NUMERIC_ONLY_REGEX.test(values.folio) || values.folio.length > FOLIO_MAX_LENGTH) {
-    return `Folio debe ser numérico y tener máximo ${FOLIO_MAX_LENGTH} dígitos.`;
-  }
-
-  if (!values.password.trim()) {
-    return "Password es requerido.";
-  }
-
-  return null;
+  const result = loginSchema.safeParse(values);
+  return result.success ? null : result.error.issues[0]?.message || "Formulario inválido.";
 }
 
 function getErrorMessage(error: unknown): string {
@@ -91,21 +92,18 @@ function getErrorMessage(error: unknown): string {
 }
 
 export function LoginForm() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const env = getEnv();
 
   const [form, setForm] = useState<FormState>(INITIAL_FORM);
-  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const loginMutation = useLoginMutation();
+  const isLoading = loginMutation.isPending;
 
   const canSubmit = useMemo(() => !isLoading, [isLoading]);
 
   const provinciaData = PROVINCIA_OPTIONS.map((option) => ({ value: option, label: option }));
   const claseData = CLASE_OPTIONS.map((option) => ({ value: option, label: option }));
-
-  useEffect(() => {
-    router.prefetch("/dashboard");
-  }, [router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -125,24 +123,20 @@ export function LoginForm() {
       password: form.password,
     };
 
-    setIsLoading(true);
-
     try {
-      const result = await login(payload);
+      const result = await loginMutation.mutateAsync(payload);
       if (result.authenticated) {
         try {
           window.sessionStorage.setItem("up-optimistic-session", "1");
         } catch {
           // ignore storage failures
         }
-        router.replace("/dashboard");
+        navigate("/dashboard", { replace: true });
         return;
       }
       setError("Credenciales inválidas.");
     } catch (requestError) {
       setError(getErrorMessage(requestError));
-    } finally {
-      setIsLoading(false);
     }
   }
 
@@ -167,7 +161,7 @@ export function LoginForm() {
     <main className={styles.shell}>
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <Link href="/" className="landing-brand">
+          <Link to="/" className="landing-brand">
             <span className="landing-brand-mark">UP</span>
             <span>{env.appName}</span>
           </Link>
@@ -342,35 +336,9 @@ export function LoginForm() {
                   </Button>
                 </Group>
 
-                <Anchor component={Link} href="/" ta="center" size="sm" className={styles.mantineAnchor}>
+                <Anchor component={Link} to="/" ta="center" size="sm" className={styles.mantineAnchor}>
                   Volver al inicio
                 </Anchor>
-
-                <Group className={styles.auxLinks}>
-                  <Anchor
-                    component="button"
-                    type="button"
-                    size="sm"
-                    c="dimmed"
-                    className={styles.mantineAnchor}
-                    onClick={(event) => event.preventDefault()}
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </Anchor>
-                  <Text size="sm" className={styles.secondaryText}>
-                    |
-                  </Text>
-                  <Anchor
-                    component="button"
-                    type="button"
-                    size="sm"
-                    c="dimmed"
-                    className={styles.mantineAnchor}
-                    onClick={(event) => event.preventDefault()}
-                  >
-                    Regístrate
-                  </Anchor>
-                </Group>
               </Stack>
             </form>
           </Stack>

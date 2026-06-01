@@ -1,12 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 
 import { AuthenticatedShellSkeleton } from "@/components/layout/AuthenticatedShellSkeleton";
 import { Button } from "@/components/ui/button";
-import { getSession, logout } from "@/features/auth/api";
+import { useLogoutMutation, useSessionQuery } from "@/features/auth/queries";
 import { StudentPhoto } from "@/features/student/components/StudentPhoto";
 import { useStudentData } from "@/features/student/context/StudentDataContext";
 import { getEnv } from "@/lib/env";
@@ -111,9 +110,9 @@ function ShellNavigation({
       {NAV_ITEMS.map((item) => {
         const active = pathname === item.href;
         return (
-          <Link
+          <NavLink
             key={item.href}
-            href={item.href}
+            to={item.href}
             aria-current={active ? "page" : undefined}
             onClick={onNavigate}
             className={cn(
@@ -125,7 +124,7 @@ function ShellNavigation({
           >
             <span className="block font-semibold">{item.label}</span>
             <span className="mt-1 block text-xs text-[var(--foreground-muted)]">{item.description}</span>
-          </Link>
+          </NavLink>
         );
       })}
     </nav>
@@ -133,13 +132,14 @@ function ShellNavigation({
 }
 
 export function AuthenticatedShellClient({ children }: AuthenticatedShellClientProps) {
-  const router = useRouter();
-  const pathname = usePathname();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathname = location.pathname;
   const { state, student, morosidad } = useStudentData();
   const env = getEnv();
+  const sessionQuery = useSessionQuery();
+  const logoutMutation = useLogoutMutation();
 
-  const [isCheckingSession, setIsCheckingSession] = useState(true);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -167,38 +167,24 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
   }, [theme]);
 
   useEffect(() => {
-    let isMounted = true;
-
-    async function checkSession() {
+    if (sessionQuery.data?.authenticated) {
       try {
-        const session = await getSession();
-        if (!isMounted) {
-          return;
-        }
-        if (!session.authenticated) {
-          router.replace("/login");
-          return;
-        }
-        try {
-          window.sessionStorage.removeItem("up-optimistic-session");
-        } catch {
-          // ignore storage failures
-        }
-        setIsCheckingSession(false);
+        window.sessionStorage.removeItem("up-optimistic-session");
       } catch {
-        if (!isMounted) {
-          return;
-        }
-        router.replace("/login");
+        // ignore storage failures
       }
     }
+  }, [sessionQuery.data?.authenticated]);
 
-    void checkSession();
+  useEffect(() => {
+    if (sessionQuery.isPending) {
+      return;
+    }
 
-    return () => {
-      isMounted = false;
-    };
-  }, [router]);
+    if (!sessionQuery.data?.authenticated) {
+      navigate("/login", { replace: true });
+    }
+  }, [navigate, sessionQuery.data?.authenticated, sessionQuery.isPending]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -222,17 +208,15 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
 
   async function handleLogout() {
     setError(null);
-    setIsLoggingOut(true);
     try {
-      await logout();
-      router.replace("/");
+      await logoutMutation.mutateAsync();
+      navigate("/", { replace: true });
     } catch {
       setError("No fue posible cerrar sesión.");
-      setIsLoggingOut(false);
     }
   }
 
-  if (isCheckingSession) {
+  if (sessionQuery.isPending || !sessionQuery.data?.authenticated) {
     return <AuthenticatedShellSkeleton />;
   }
 
@@ -280,10 +264,10 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
             <button
               type="button"
               onClick={handleLogout}
-              disabled={isLoggingOut}
+              disabled={logoutMutation.isPending}
               className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)] disabled:opacity-50"
             >
-              {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+              {logoutMutation.isPending ? "Cerrando sesión..." : "Cerrar sesión"}
             </button>
           </div>
         </aside>
@@ -369,10 +353,10 @@ export function AuthenticatedShellClient({ children }: AuthenticatedShellClientP
               <button
                 type="button"
                 onClick={handleLogout}
-                disabled={isLoggingOut}
+                disabled={logoutMutation.isPending}
                 className="inline-flex min-h-10 items-center justify-center rounded-md border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--danger)] hover:bg-[var(--danger-soft)] disabled:opacity-50"
               >
-                {isLoggingOut ? "Cerrando sesión..." : "Cerrar sesión"}
+                {logoutMutation.isPending ? "Cerrando sesión..." : "Cerrar sesión"}
               </button>
             </div>
           </div>

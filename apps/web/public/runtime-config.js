@@ -1,0 +1,1 @@
+window.__CALIFICACIONES_UP_RUNTIME__ = window.__CALIFICACIONES_UP_RUNTIME__ || {};

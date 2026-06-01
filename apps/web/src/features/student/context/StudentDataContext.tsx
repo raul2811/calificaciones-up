@@ -1,10 +1,11 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import {
   AVANCE_ACADEMICO_LOADING_STATE,
-  getAvanceAcademico,
+  fetchAvanceAcademicoData,
   type AvanceAcademicoState,
 } from "@/features/student/api";
 import type { DashboardAnalytics } from "@/features/student/analytics/types";
@@ -38,34 +39,49 @@ const EMPTY_STUDENT: StudentSummary = {
 const StudentDataContext = createContext<StudentDataContextValue | null>(null);
 
 export function StudentDataProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<AvanceAcademicoState>(AVANCE_ACADEMICO_LOADING_STATE);
+  const query = useQuery({
+    queryKey: ["student", "avance"],
+    queryFn: fetchAvanceAcademicoData,
+  });
 
-  const refresh = useCallback(async () => {
-    setState(AVANCE_ACADEMICO_LOADING_STATE);
-    const nextState = await getAvanceAcademico();
-    setState(nextState);
-  }, []);
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function load() {
-      setState(AVANCE_ACADEMICO_LOADING_STATE);
-      const nextState = await getAvanceAcademico();
-
-      if (!mounted) {
-        return;
-      }
-
-      setState(nextState);
+  const state = useMemo<AvanceAcademicoState>(() => {
+    if (query.isPending) {
+      return AVANCE_ACADEMICO_LOADING_STATE;
     }
 
-    void load();
+    if (query.isError) {
+      return {
+        status: "error",
+        data: null,
+        error:
+          query.error instanceof Error
+            ? query.error.message
+            : "Error inesperado al consultar el avance academico.",
+      };
+    }
 
-    return () => {
-      mounted = false;
+    if (!query.data) {
+      return AVANCE_ACADEMICO_LOADING_STATE;
+    }
+
+    if (query.data.subjects.length === 0) {
+      return {
+        status: "empty",
+        data: query.data,
+        error: null,
+      };
+    }
+
+    return {
+      status: "success",
+      data: query.data,
+      error: null,
     };
-  }, []);
+  }, [query.data, query.error, query.isError, query.isPending]);
+
+  const refresh = useCallback(async () => {
+    await query.refetch();
+  }, [query]);
 
   const subjects = useMemo(
     () => (state.status === "success" || state.status === "empty" ? state.data.subjects : []),

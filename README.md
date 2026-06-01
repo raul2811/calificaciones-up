@@ -1,6 +1,6 @@
 # 🎓 Calificaciones UP
 
-![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)
+![Vite](https://img.shields.io/badge/Vite-React_TS-646cff?style=for-the-badge&logo=vite)
 ![Rust](https://img.shields.io/badge/Rust-Axum-dea584?style=for-the-badge&logo=rust)
 ![Docker](https://img.shields.io/badge/Docker-Ready-2496ed?style=for-the-badge&logo=docker)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326ce5?style=for-the-badge&logo=kubernetes)
@@ -32,7 +32,7 @@ Calificaciones-UP es una propuesta de mejora visual y funcional de la plataforma
 
 El proyecto esta construido bajo una arquitectura de **monorepo**, separando responsabilidades para garantizar velocidad y escalabilidad.
 
-- **Frontend:** `Next.js 15` + `React 19` + `Tailwind CSS v4`
+- **Frontend:** `Vite` + `React 19` + `TypeScript` + `Mantine`
 - **Backend:** `Rust` + `Axum`
 - **Infraestructura:** `Docker` + `Docker Compose`
 - **Lenguaje cliente:** `TypeScript`
@@ -44,7 +44,7 @@ El proyecto esta construido bajo una arquitectura de **monorepo**, separando res
 ```text
 calificaciones-up/
 ├── apps/
-│   ├── web/                # Next.js App Router
+│   ├── web/                # Vite SPA + Bun runtime
 │   │   └── Dockerfile
 │   └── api/                # Rust + Axum
 │       └── Dockerfile
@@ -168,12 +168,12 @@ curl http://localhost:8081/ready
 
 Variables relevantes:
 
-- `NEXT_PUBLIC_API_BASE_URL` requerida
-- `NEXT_PUBLIC_APP_NAME` opcional
-- `NEXT_PUBLIC_SITE_URL` opcional
+- `VITE_API_URL` requerida
+- `VITE_APP_NAME` opcional
+- `VITE_SITE_URL` opcional
 
 Importante:
-`NEXT_PUBLIC_API_BASE_URL` es publica y queda embebida en el build del frontend. En produccion debe apuntar a una URL accesible desde el navegador del usuario, no a un hostname interno como `http://api:8081`.
+`VITE_API_URL` queda disponible para el cliente y debe apuntar a una URL accesible desde el navegador del usuario, no a un hostname interno como `http://api:8081`.
 
 ### Backend
 
@@ -195,8 +195,8 @@ Frontend:
 ```bash
 docker build \
   -f apps/web/Dockerfile \
-  --build-arg NEXT_PUBLIC_API_BASE_URL=http://localhost:8081 \
-  --build-arg NEXT_PUBLIC_SITE_URL=http://localhost:3000 \
+  --build-arg VITE_API_URL=http://localhost:8081 \
+  --build-arg VITE_SITE_URL=http://localhost:3000 \
   -t calificaciones-up-web .
 
 docker run --rm -p 3000:3000 calificaciones-up-web
@@ -226,9 +226,9 @@ En el cluster `lab-citic`, el stack vive bajo `clusters/lab-citic/platform/calif
 
 `web`:
 
-- `NEXT_PUBLIC_API_BASE_URL`
-- `NEXT_PUBLIC_SITE_URL`
-- `NEXT_PUBLIC_APP_NAME` opcional
+- `VITE_API_URL`
+- `VITE_SITE_URL`
+- `VITE_APP_NAME` opcional
 
 `api`:
 
@@ -241,7 +241,7 @@ En el cluster `lab-citic`, el stack vive bajo `clusters/lab-citic/platform/calif
 
 1. Ajusta los dominios publicos en `deploy/kubernetes/base/configmap.yaml`.
 2. Despliega `api` primero y valida `GET /health` y `GET /ready`.
-3. Despliega `web` y confirma que `/runtime-config` responde con las URLs correctas.
+3. Despliega `web` y confirma que `/runtime-config.js` responde con las URLs correctas.
 4. Mantén `api` en una sola replica hasta mover las sesiones a un almacén compartido.
 
 ## CI/CD y DevOps
@@ -260,7 +260,7 @@ Que valida cada uno:
 - `CI` asegura calidad base de Rust sobre `apps/api`.
 - `Security` cubre vulnerabilidades conocidas, licencias permitidas y politicas de dependencias.
 - `Docker` valida que las imagenes realmente construyen y arrancan; cuando publica, etiqueta imagenes ejecutables para `linux/amd64` en GHCR.
-- Las imagenes de runtime son minimas: `api` compila un binario Rust estatico y corre en `scratch`; `web` usa el build `standalone` de Next.js sobre `gcr.io/distroless/nodejs22-debian13:nonroot`.
+- Las imagenes de runtime son minimas: `api` compila un binario Rust estatico y corre en `scratch`; `web` compila con Vite y sirve `dist/` con Bun, exponiendo `runtime-config.js` para configuracion publica.
 
 Secrets y variables necesarios:
 

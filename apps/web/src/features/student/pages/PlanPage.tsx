@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { PageIntro } from "@/components/common/PageIntro";
 import type { SubjectView } from "@/features/student/analytics/types";
@@ -78,8 +78,8 @@ function sortSubjects(subjects: SubjectView[], sortBy: PlanSortKey, direction: P
 }
 
 export function PlanPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { state, analytics } = useStudentData();
 
   const initialSearch = searchParams.get("search") || "";
@@ -122,8 +122,8 @@ export function PlanPage() {
     if (sortDirection !== "asc") {
       params.set("dir", sortDirection);
     }
-    router.replace(params.toString() ? `/plan?${params.toString()}` : "/plan");
-  }, [router, searchTerm, sortBy, sortDirection, statusFilter]);
+    navigate(params.toString() ? `/plan?${params.toString()}` : "/plan", { replace: true });
+  }, [navigate, searchTerm, sortBy, sortDirection, statusFilter]);
 
   const sortedSubjects = useMemo(
     () => sortSubjects(filteredSubjects, sortBy, sortDirection),

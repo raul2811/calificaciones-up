@@ -221,22 +221,37 @@ function adaptAvanceAcademicoResponse(value: unknown): AvanceAcademicoResponse |
   };
 }
 
+export async function fetchAvanceAcademicoData(): Promise<AvanceAcademicoResponse> {
+  const response = await apiFetch<unknown>("/student/avance", {
+    method: "GET",
+    credentials: "include",
+  });
+
+  const adapted = adaptAvanceAcademicoResponse(response);
+
+  if (!adapted || !isAvanceAcademicoResponse(adapted)) {
+    throw new ApiClientError("Respuesta invalida de la API de avance academico.", {
+      code: "INVALID_RESPONSE",
+      details: response,
+    });
+  }
+
+  return adapted;
+}
+
+export async function fetchStudentPhotoBlob(): Promise<Blob> {
+  const response = await apiFetch<Response>("/student/photo", {
+    method: "GET",
+    credentials: "include",
+    parseAs: "response",
+  });
+
+  return response.blob();
+}
+
 export async function getAvanceAcademico(): Promise<AvanceAcademicoState> {
   try {
-    const response = await apiFetch<unknown>("/student/avance", {
-      method: "GET",
-      credentials: "include",
-    });
-
-    const adapted = adaptAvanceAcademicoResponse(response);
-
-    if (!adapted || !isAvanceAcademicoResponse(adapted)) {
-      return {
-        status: "error",
-        data: null,
-        error: "Respuesta invalida de la API de avance academico.",
-      };
-    }
+    const adapted = await fetchAvanceAcademicoData();
 
     if (adapted.subjects.length === 0) {
       return {

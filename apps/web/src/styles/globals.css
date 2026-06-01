@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
 
 :root {
   color-scheme: light;
@@ -110,7 +112,6 @@ html.theme-dark {
 }
 
 html {
-  text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 

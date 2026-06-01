@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useLocation } from "react-router-dom";
 
 import { LiveBackground, type LiveBackgroundVariant } from "@/components/shared/LiveBackground";
 
@@ -32,6 +32,6 @@ function resolveVariant(pathname: string): LiveBackgroundVariant {
 }
 
 export function RouteLiveBackground() {
-  const pathname = usePathname();
-  return <LiveBackground variant={resolveVariant(pathname)} />;
+  const location = useLocation();
+  return <LiveBackground variant={resolveVariant(location.pathname)} />;
 }

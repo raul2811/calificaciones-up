@@ -7,8 +7,8 @@ Base de despliegue para `Calificaciones UP`.
 - `web`: `100m` CPU / `256Mi` memoria de request, `500m` / `512Mi` de limit.
 - `api`: `100m` CPU / `256Mi` de request, `500m` / `512Mi` de limit.
 
-Es un punto de partida conservador para un frontend Next.js y un backend Rust ligero con scraping y parsing HTML.
-El frontend necesita algo mas de memoria que CPU por el servidor de Next y las respuestas SSR; el backend suele ser barato en CPU pero puede picos de memoria al procesar HTML y sesiones.
+Es un punto de partida conservador para un frontend Vite servido por Bun y un backend Rust ligero con scraping y parsing HTML.
+El frontend necesita algo mas de memoria que CPU por el bundle cliente y el servidor Bun que expone `runtime-config.js`; el backend suele ser barato en CPU pero puede tener picos de memoria al procesar HTML y sesiones.
 
 ## Criterio de escalado
 
@@ -27,12 +27,12 @@ kubectl apply -k deploy/kubernetes/base
 
 Las direcciones publicas viven en `ConfigMap`:
 
-- `NEXT_PUBLIC_API_BASE_URL`
-- `NEXT_PUBLIC_SITE_URL`
+- `VITE_API_URL`
+- `VITE_SITE_URL`
+- `VITE_APP_NAME`
 - `FRONTEND_ORIGIN`
 - `MATRICULA_BASE_URL`
 - `MATRICULA_USER_AGENT`
 - `RUST_LOG`
 
 Reemplaza los dominios de ejemplo antes de aplicar el manifiesto en un cluster real.
-

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Image, { type ImageLoaderProps } from "next/image";
+import { useQuery } from "@tanstack/react-query";
 
-import { apiFetch } from "@/lib/api/client";
+import { fetchStudentPhotoBlob } from "@/features/student/api";
 
 type StudentPhotoProps = {
   name: string;
@@ -32,54 +32,34 @@ export function StudentPhoto({
   roundedClassName = "rounded-xl",
 }: StudentPhotoProps) {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
   const initials = useMemo(() => initialsFromName(name), [name]);
+  const photoQuery = useQuery({
+    queryKey: ["student", "photo"],
+    queryFn: fetchStudentPhotoBlob,
+    retry: 0,
+  });
 
   useEffect(() => {
-    let mounted = true;
     let objectUrl: string | null = null;
 
-    async function loadPhoto() {
-      try {
-        const response = await apiFetch<Response>("/student/photo", {
-          method: "GET",
-          credentials: "include",
-          parseAs: "response",
-        });
-
-        const blob = await response.blob();
-        objectUrl = URL.createObjectURL(blob);
-
-        if (!mounted) {
-          return;
-        }
-
-        setPhotoUrl(objectUrl);
-        setFailed(false);
-      } catch {
-        if (!mounted) {
-          return;
-        }
-
-        setPhotoUrl(null);
-        setFailed(true);
-      }
+    if (photoQuery.data) {
+      objectUrl = URL.createObjectURL(photoQuery.data);
+      setPhotoUrl(objectUrl);
+    } else {
+      setPhotoUrl(null);
     }
 
-    void loadPhoto();
-
     return () => {
-      mounted = false;
       if (objectUrl) {
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, []);
+  }, [photoQuery.data]);
 
   const baseClass = `surface-elevated overflow-hidden ${roundedClassName}`;
   const px = `${size}px`;
 
-  if (failed || !photoUrl) {
+  if (photoQuery.isError || !photoUrl) {
     return (
       <div className={baseClass} style={{ width: px, height: px }}>
         <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_24%_18%,var(--neon-gold),transparent_45%),linear-gradient(145deg,var(--surface-accent),var(--surface-muted))] text-base font-semibold text-primary">
@@ -89,22 +69,15 @@ export function StudentPhoto({
     );
   }
 
-  function passthroughLoader({ src }: ImageLoaderProps): string {
-    return src;
-  }
-
   return (
     <div className={baseClass} style={{ width: px, height: px }}>
-      <Image
-        loader={passthroughLoader}
-        unoptimized
+      <img
         src={photoUrl}
         alt={`Foto de ${name}`}
         width={size}
         height={size}
         className="h-full w-full object-cover"
         onError={() => {
-          setFailed(true);
           setPhotoUrl(null);
         }}
       />

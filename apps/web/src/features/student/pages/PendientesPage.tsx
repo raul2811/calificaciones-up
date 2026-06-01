@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import { PageIntro } from "@/components/common/PageIntro";
 import { BlockingSubjectsPanel } from "@/features/student/components/BlockingSubjectsPanel";
@@ -31,8 +31,8 @@ function statusToFocus(status: string | null): "all" | "pending" | "failed" | "o
 }
 
 export function PendientesPage() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { state, analytics } = useStudentData();
   const [focus, setFocus] = useState<"all" | "pending" | "failed" | "observation">(
     statusToFocus(searchParams.get("status")),
@@ -70,12 +70,12 @@ export function PendientesPage() {
         focus={focus}
         onFocusChange={setFocus}
         onOpenPlan={(subject) =>
-          router.push(`/plan?search=${encodeURIComponent(subject.code || subject.name)}`)
+          navigate(`/plan?search=${encodeURIComponent(subject.code || subject.name)}`)
         }
       />
       <BlockingSubjectsPanel
         subjects={analytics.blockingSubjects}
-        onSelectSubject={(code, name) => router.push(`/plan?search=${encodeURIComponent(code || name)}`)}
+        onSelectSubject={(code, name) => navigate(`/plan?search=${encodeURIComponent(code || name)}`)}
       />
     </div>
   );

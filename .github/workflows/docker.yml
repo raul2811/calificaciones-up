@@ -87,9 +87,9 @@ jobs:
         run: |
           if [ "${{ matrix.id }}" = "web" ]; then
             docker run -d --rm --name "${{ matrix.id }}" -p "${{ matrix.port }}" \
-              -e NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8081 \
-              -e NEXT_PUBLIC_SITE_URL=http://127.0.0.1:3000 \
-              -e NEXT_PUBLIC_APP_NAME=Calificaciones\ UP \
+              -e VITE_API_URL=http://127.0.0.1:8081 \
+              -e VITE_SITE_URL=http://127.0.0.1:3000 \
+              -e VITE_APP_NAME=Calificaciones\ UP \
               "local/${{ matrix.image }}:ci"
           else
             docker run -d --rm --name "${{ matrix.id }}" -p "${{ matrix.port }}" \

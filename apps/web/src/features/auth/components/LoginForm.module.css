@@ -229,3 +229,42 @@
     padding: 1.75rem;
   }
 }
+
+:global(.theme-dark) .fieldSet {
+  background: color-mix(in srgb, var(--card-muted) 88%, #020617) !important;
+  border-color: var(--border-strong) !important;
+}
+
+:global(.theme-dark) .fieldSetLegend {
+  background: var(--card);
+  color: var(--foreground);
+}
+
+:global(.theme-dark) .mantineControl,
+:global(.theme-dark) .mantineInput :global(.mantine-Input-input),
+:global(.theme-dark) .fieldSet :global(.mantine-Input-input) {
+  background-color: var(--input) !important;
+  border-color: var(--border-strong) !important;
+  color: var(--foreground) !important;
+}
+
+:global(.theme-dark) .mantineControl::placeholder,
+:global(.theme-dark) .mantineInput :global(.mantine-Input-input)::placeholder,
+:global(.theme-dark) .fieldSet :global(.mantine-Input-input)::placeholder {
+  color: var(--foreground-muted) !important;
+}
+
+:global(.theme-dark) .mantineDropdown {
+  background: var(--card-strong) !important;
+  border-color: var(--border-strong) !important;
+}
+
+:global(.theme-dark) .mantineButtonSecondary {
+  background: var(--secondary) !important;
+  border-color: var(--border-strong) !important;
+  color: var(--secondary-foreground) !important;
+}
+
+:global(.theme-dark) .mantineButtonSecondary:hover {
+  background: var(--secondary-hover) !important;
+}

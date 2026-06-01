@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useNavigate } from "react-router-dom";
 
 import { BlockingSubjectsPanel } from "@/features/student/components/BlockingSubjectsPanel";
 import {
@@ -35,7 +35,7 @@ function toPlanStatusQuery(key: KpiActionKey): string | null {
 }
 
 export function DashboardOverviewPage() {
-  const router = useRouter();
+  const navigate = useNavigate();
   const { state, student, analytics, morosidad, refresh } = useStudentData();
   const hasAcademicData = state.status === "success" || state.status === "empty";
   const isLoading = state.status === "loading";
@@ -43,17 +43,17 @@ export function DashboardOverviewPage() {
   function handleKpiClick(key: KpiActionKey) {
     const status = toPlanStatusQuery(key);
     if (status) {
-      router.push(`/plan?status=${encodeURIComponent(status)}`);
+      navigate(`/plan?status=${encodeURIComponent(status)}`);
       return;
     }
 
     if (key === "progressPercentage" || key === "approvedCredits" || key === "pendingCredits") {
-      router.push("/analytics");
+      navigate("/analytics");
       return;
     }
 
     if (key === "totalSubjects" || key === "totalCredits") {
-      router.push("/plan");
+      navigate("/plan");
       return;
     }
   }
@@ -128,8 +128,8 @@ export function DashboardOverviewPage() {
       {hasAcademicData ? (
         <ExecutiveCharts
           analytics={analytics}
-          onStatusClick={(status) => router.push(`/plan?status=${encodeURIComponent(status)}`)}
-          onGradeRangeClick={(range) => router.push(`/analytics?gradeRange=${encodeURIComponent(range)}`)}
+          onStatusClick={(status) => navigate(`/plan?status=${encodeURIComponent(status)}`)}
+          onGradeRangeClick={(range) => navigate(`/analytics?gradeRange=${encodeURIComponent(range)}`)}
         />
       ) : isLoading ? (
         <AnalyticsSkeleton />
@@ -145,7 +145,7 @@ export function DashboardOverviewPage() {
         <BlockingSubjectsPanel
           subjects={analytics.blockingSubjects}
           onSelectSubject={(code, name) =>
-            router.push(`/plan?search=${encodeURIComponent(code || name)}`)
+            navigate(`/plan?search=${encodeURIComponent(code || name)}`)
           }
         />
       ) : isLoading ? (
