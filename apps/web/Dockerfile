@@ -17,6 +17,12 @@ FROM docker.io/oven/bun:1.3.12-debian AS builder
 WORKDIR /app
 
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG NEXT_PUBLIC_API_BASE_URL=https://example.invalid
+ARG NEXT_PUBLIC_SITE_URL=https://example.invalid
+ARG NEXT_PUBLIC_APP_NAME=Calificaciones\ UP
+ENV NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_PUBLIC_APP_NAME=${NEXT_PUBLIC_APP_NAME}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json
@@ -28,7 +34,7 @@ WORKDIR /app/apps/web
 
 RUN bun run build
 
-FROM gcr.io/distroless/nodejs22-debian13:nonroot AS runner
+FROM docker.io/oven/bun:1.3.12-debian AS runner
 
 WORKDIR /app
 
@@ -37,12 +43,12 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
-COPY --from=builder --chown=65532:65532 /app/apps/web/.next/standalone ./
-COPY --from=builder --chown=65532:65532 /app/apps/web/.next/static ./apps/web/.next/static
-#COPY --from=builder --chown=65532:65532 /app/apps/web/public ./apps/web/public
+COPY --from=builder --chown=bun:bun /app/apps/web/.next/standalone ./
+COPY --from=builder --chown=bun:bun /app/apps/web/.next/static ./apps/web/.next/static
+#COPY --from=builder --chown=bun:bun /app/apps/web/public ./apps/web/public
 
-USER 65532:65532
+USER bun
 
 EXPOSE 3000
 
-CMD ["apps/web/server.js"]
+CMD ["bun", "apps/web/server.js"]
