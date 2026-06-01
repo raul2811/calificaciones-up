@@ -6,6 +6,7 @@
       ".next",
       "dist",
       "coverage",
+      "audit",
       "bun.lock",
       "vite.config.js",
       "vite.config.d.ts",

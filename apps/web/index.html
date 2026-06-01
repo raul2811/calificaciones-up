@@ -15,16 +15,7 @@
       rel="stylesheet"
     />
     <script src="/runtime-config.js"></script>
-    <script>
-      try {
-        var savedTheme = window.localStorage.getItem("up-theme");
-        if (savedTheme === "dark") {
-          document.documentElement.classList.add("theme-dark");
-        } else {
-          document.documentElement.classList.remove("theme-dark");
-        }
-      } catch (_error) {}
-    </script>
+    <script src="/theme-init.js"></script>
     <title>Calificaciones UP</title>
   </head>
   <body>
